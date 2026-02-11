@@ -6,6 +6,7 @@ import '../screens/home_screen.dart';
 import '../screens/server_config_screen.dart';
 import '../screens/welcome_screen.dart';
 import '../screens/file_browser_screen.dart';
+import '../screens/settings_screen.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 
@@ -20,9 +21,10 @@ class AppRouter {
         final isLoggingIn = state.matchedLocation == '/login';
         final isWelcome = state.matchedLocation == '/welcome';
         final isServerConfig = state.matchedLocation == '/server-config';
+        final isSettings = state.matchedLocation == '/settings';
 
-        // Allow access to server config and welcome screens
-        if (isServerConfig || isWelcome) {
+        // Allow access to server config, welcome, and settings (e.g. language) when not logged in
+        if (isServerConfig || isWelcome || isSettings) {
           return null;
         }
 
@@ -68,6 +70,11 @@ class AppRouter {
           path: '/server-config',
           name: 'server-config',
           builder: (context, state) => const ServerConfigScreen(),
+        ),
+        GoRoute(
+          path: '/settings',
+          name: 'settings',
+          builder: (context, state) => const SettingsScreen(),
         ),
         GoRoute(
           path: '/welcome',

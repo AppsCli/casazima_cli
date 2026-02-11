@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/system_info_provider.dart';
 import '../providers/app_provider.dart';
@@ -33,28 +34,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CasaOS / ZimaOS'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.folder),
             onPressed: () {
               context.go('/files');
             },
-            tooltip: '文件管理',
+            tooltip: l10n.files,
           ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
               context.go('/server-config');
             },
-            tooltip: '服务器配置',
+            tooltip: l10n.serverConfig,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadData,
-            tooltip: '刷新',
+            tooltip: l10n.refresh,
           ),
           PopupMenuButton<String>(
             icon: Consumer<AuthProvider>(
@@ -71,18 +73,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 enabled: false,
                 child: Consumer<AuthProvider>(
                   builder: (context, authProvider, child) {
-                    return Text('用户: ${authProvider.user?.username ?? ""}');
+                    return Text('${l10n.user}: ${authProvider.user?.username ?? ""}');
                   },
                 ),
               ),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'settings',
-                child: Text('设置'),
+                child: Text(l10n.settings),
               ),
               const PopupMenuDivider(),
               PopupMenuItem<String>(
                 value: 'logout',
-                child: const Text('退出登录'),
+                child: Text(l10n.logout),
                 onTap: () async {
                   await Future.delayed(const Duration(milliseconds: 100));
                   if (context.mounted) {
@@ -98,6 +100,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ],
+            onSelected: (String value) {
+              if (value == 'settings') {
+                context.go('/settings');
+              }
+            },
           ),
         ],
       ),
@@ -111,10 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // System Status Section
-              const Text(
-                '系统状态',
-                style: TextStyle(
+              Text(
+                l10n.systemStatus,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -136,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          '错误: ${provider.error}',
+                          '${l10n.error}: ${provider.error}',
                           style: const TextStyle(color: Colors.red),
                         ),
                       ),
@@ -154,9 +160,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    '应用',
-                    style: TextStyle(
+                  Text(
+                    l10n.apps,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -164,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Consumer<AppProvider>(
                     builder: (context, provider, child) {
                       return Text(
-                        '共 ${provider.apps.length} 个',
+                        l10n.appCount(provider.apps.length),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
@@ -191,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          '错误: ${provider.error}',
+                          '${l10n.error}: ${provider.error}',
                           style: const TextStyle(color: Colors.red),
                         ),
                       ),
@@ -199,11 +205,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
 
                   if (provider.apps.isEmpty) {
-                    return const Card(
+                    return Card(
                       child: Padding(
-                        padding: EdgeInsets.all(32.0),
+                        padding: const EdgeInsets.all(32.0),
                         child: Center(
-                          child: Text('暂无应用'),
+                          child: Text(l10n.noApps),
                         ),
                       ),
                     );
