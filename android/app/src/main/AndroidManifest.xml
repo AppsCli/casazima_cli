@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 网络访问权限：API 请求、图片加载等 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="casazima_cli"
         android:name="${applicationName}"

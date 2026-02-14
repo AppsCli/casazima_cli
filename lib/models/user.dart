@@ -48,7 +48,7 @@ class LoginResponse {
       user: User.fromJson(user),
       accessToken: token['access_token'] as String,
       refreshToken: token['refresh_token'] as String,
-      expiresAt: token['expires_at'] as String,
+      expiresAt: token['expires_at']?.toString() ?? '',
     );
   }
 }
