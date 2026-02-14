@@ -6,21 +6,30 @@ class AppGrid extends StatelessWidget {
 
   const AppGrid({super.key, required this.apps});
 
+  /// 桌面端根据宽度自适应每行数量，移动端保持适中尺寸
+  static const double _minCellWidth = 140.0;
+
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 1.2,
-      ),
-      itemCount: apps.length,
-      itemBuilder: (context, index) {
-        final app = apps[index];
-        return _AppCard(app: app);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final count = (width / _minCellWidth).floor().clamp(2, 12);
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: count,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.2,
+          ),
+          itemCount: apps.length,
+          itemBuilder: (context, index) {
+            final app = apps[index];
+            return _AppCard(app: app);
+          },
+        );
       },
     );
   }

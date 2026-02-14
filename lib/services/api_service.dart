@@ -409,6 +409,7 @@ class ApiService {
       state: status ?? json['state'] as String?,
       isRunning: status == 'running' || (json['running'] as bool? ?? false),
       category: json['category'] as String?,
+      appType: json['app_type'] as String?,
     );
   }
 

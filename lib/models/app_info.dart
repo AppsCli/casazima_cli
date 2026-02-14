@@ -7,6 +7,8 @@ class AppInfo {
   final String? state;
   final bool? isRunning;
   final String? category;
+  /// appgrid 返回的类型：v2app、container 等；container 表示旧应用（待重建）
+  final String? appType;
 
   AppInfo({
     required this.id,
@@ -17,6 +19,7 @@ class AppInfo {
     this.state,
     this.isRunning,
     this.category,
+    this.appType,
   });
 
   factory AppInfo.fromJson(Map<String, dynamic> json) {
@@ -29,6 +32,7 @@ class AppInfo {
       state: json['state'] as String?,
       isRunning: json['running'] as bool? ?? false,
       category: json['category'] as String?,
+      appType: json['app_type'] as String?,
     );
   }
 
@@ -42,6 +46,10 @@ class AppInfo {
       'state': state,
       'running': isRunning,
       'category': category,
+      'app_type': appType,
     };
   }
+
+  bool get isLegacyContainer => appType == 'container';
 }
+

@@ -215,7 +215,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
 
-                  return AppGrid(apps: provider.apps);
+                  final normalApps = provider.apps.where((a) => !a.isLegacyContainer).toList();
+                  final legacyApps = provider.apps.where((a) => a.isLegacyContainer).toList();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (normalApps.isNotEmpty) AppGrid(apps: normalApps),
+                      if (legacyApps.isNotEmpty) ...[
+                        if (normalApps.isNotEmpty) const SizedBox(height: 24),
+                        Text(
+                          '旧应用程序 (待重建)',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        AppGrid(apps: legacyApps),
+                      ],
+                    ],
+                  );
                 },
               ),
             ],

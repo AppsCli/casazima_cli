@@ -370,32 +370,41 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
     );
   }
 
+  /// 桌面端根据宽度自适应每行数量，使每项大小适中
+  static const double _minCellWidth = 140.0;
+
   Widget _buildGridView(FileProvider provider) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.8,
-      ),
-      itemCount: provider.files.length,
-      itemBuilder: (context, index) {
-        final item = provider.files[index];
-        return _FileItemCard(
-          item: item,
-          onTap: () {
-            if (item.isDir) {
-              provider.navigateTo(item.path);
-            } else {
-              // TODO: Open file viewer
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('打开文件: ${item.name}')),
-              );
-            }
-          },
-          onLongPress: () {
-            _showItemMenu(item, provider);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final count = (width / _minCellWidth).floor().clamp(2, 12);
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: count,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: provider.files.length,
+          itemBuilder: (context, index) {
+            final item = provider.files[index];
+            return _FileItemCard(
+              item: item,
+              onTap: () {
+                if (item.isDir) {
+                  provider.navigateTo(item.path);
+                } else {
+                  // TODO: Open file viewer
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('打开文件: ${item.name}')),
+                  );
+                }
+              },
+              onLongPress: () {
+                _showItemMenu(item, provider);
+              },
+            );
           },
         );
       },
