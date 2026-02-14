@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
@@ -35,21 +36,28 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.folder),
             onPressed: () {
-              context.go('/files');
+              context.push('/files');
             },
             tooltip: l10n.files,
           ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              context.go('/server-config');
+              context.push('/server-config');
             },
             tooltip: l10n.serverConfig,
           ),
@@ -102,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
             onSelected: (String value) {
               if (value == 'settings') {
-                context.go('/settings');
+                context.push('/settings');
               }
             },
           ),
@@ -245,6 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }
