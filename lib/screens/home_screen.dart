@@ -152,6 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   return SystemStatusCard(
                     hardwareInfo: provider.hardwareInfo,
                     systemInfo: provider.systemInfo,
+                    selectedNetworkIndex: provider.selectedNetworkIndex,
+                    onNetworkSelected: provider.setSelectedNetworkIndex,
                   );
                 },
               ),

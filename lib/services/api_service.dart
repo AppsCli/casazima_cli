@@ -261,6 +261,20 @@ class ApiService {
     throw Exception('Failed to get hardware info');
   }
 
+  /// 获取系统利用率（与 CasaOS-UI getUtilization 一致：/v1/sys/utilization）
+  /// 返回 data 部分，包含 cpu, mem, sys_disk, net 等，用于首页实时展示与网速计算
+  Future<Map<String, dynamic>> getUtilization() async {
+    final response = await _get('/v1/sys/utilization');
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      if (json['success'] == 200 && json['data'] != null) {
+        return json['data'] as Map<String, dynamic>;
+      }
+    }
+    _logErrorResponse('getUtilization', response);
+    throw Exception('Failed to get utilization');
+  }
+
   Future<CpuInfo> getCpuInfo() async {
     final response = await _get('/v1/sys/cpu');
     

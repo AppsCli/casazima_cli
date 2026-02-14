@@ -4,11 +4,15 @@ import '../models/system_info.dart';
 class SystemStatusCard extends StatelessWidget {
   final HardwareInfo? hardwareInfo;
   final SystemInfo? systemInfo;
+  final int selectedNetworkIndex;
+  final ValueChanged<int>? onNetworkSelected;
 
   const SystemStatusCard({
     super.key,
     this.hardwareInfo,
     this.systemInfo,
+    this.selectedNetworkIndex = 0,
+    this.onNetworkSelected,
   });
 
   @override
@@ -31,12 +35,18 @@ class SystemStatusCard extends StatelessWidget {
                 _buildMemoryInfo(hardwareInfo!.memory!),
                 const Divider(),
               ],
+              if (hardwareInfo!.storageSummary != null) ...[
+                _buildStorageSummary(hardwareInfo!.storageSummary!),
+                const Divider(),
+              ],
               if (hardwareInfo!.disks != null && hardwareInfo!.disks!.isNotEmpty) ...[
                 _buildDiskInfo(hardwareInfo!.disks!),
                 const Divider(),
               ],
-              if (hardwareInfo!.network != null) ...[
-                _buildNetworkInfo(hardwareInfo!.network!),
+              if (hardwareInfo!.networks != null && hardwareInfo!.networks!.isNotEmpty) ...[
+                _buildNetworkSectionWithDropdown(context),
+              ] else if (hardwareInfo!.network != null) ...[
+                _buildNetworkInfoFromSingle(hardwareInfo!.network!),
               ],
             ],
           ],
@@ -75,7 +85,7 @@ class SystemStatusCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'CPU',
+              'CPU 占用率',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
@@ -118,14 +128,14 @@ class SystemStatusCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              '内存',
+              '内存 (RAM)',
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
               ),
             ),
             Text(
-              '${memory.usedPercent.toStringAsFixed(1)}%',
+              '${memory.usedPercent.toStringAsFixed(1)}% 占用率',
               style: TextStyle(
                 color: _getUsageColor(memory.usedPercent),
                 fontWeight: FontWeight.bold,
@@ -143,10 +153,55 @@ class SystemStatusCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '${memory.formattedUsed} / ${memory.formattedTotal}',
+          '已用 ${memory.formattedUsed} / 总量 ${memory.formattedTotal}',
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStorageSummary(StorageSummary storage) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '存储空间',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '总计 ${storage.formattedTotal}',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            Text(
+              '已用 ${storage.formattedUsed} · ${storage.usedPercent.toStringAsFixed(1)}%',
+              style: TextStyle(
+                fontSize: 12,
+                color: _getUsageColor(storage.usedPercent),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: (storage.usedPercent / 100).clamp(0.0, 1.0),
+            minHeight: 10,
+            backgroundColor: Colors.grey.shade200,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              _getUsageColor(storage.usedPercent),
+            ),
           ),
         ),
       ],
@@ -210,26 +265,80 @@ class SystemStatusCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNetworkInfo(NetworkInfo network) {
+  Widget _buildNetworkSectionWithDropdown(BuildContext context) {
+    final nets = hardwareInfo!.networks!;
+    final idx = selectedNetworkIndex.clamp(0, nets.length - 1);
+    final current = nets[idx];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              '网络状态',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+              ),
+            ),
+            if (onNetworkSelected != null && nets.length > 1)
+              DropdownButton<int>(
+                value: idx,
+                isDense: true,
+                underline: const SizedBox.shrink(),
+                items: List.generate(nets.length, (i) => DropdownMenuItem<int>(value: i, child: Text(nets[i].name, overflow: TextOverflow.ellipsis))),
+                onChanged: (v) {
+                  if (v != null) onNetworkSelected!(v);
+                },
+              )
+            else
+              Text(
+                current.name,
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                overflow: TextOverflow.ellipsis,
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(Icons.arrow_upward, size: 16, color: Colors.blue.shade700),
+            const SizedBox(width: 4),
+            Text(_formatSpeed(current.uploadSpeed), style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+            const SizedBox(width: 16),
+            Icon(Icons.arrow_downward, size: 16, color: Colors.green.shade700),
+            const SizedBox(width: 4),
+            Text(_formatSpeed(current.downloadSpeed), style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNetworkInfoFromSingle(NetworkInfo network) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          '网络',
+          '网络状态',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,
           ),
         ),
         const SizedBox(height: 8),
-        _buildInfoRow(
-          '上传速度',
-          _formatSpeed(network.uploadSpeed),
-        ),
-        const SizedBox(height: 4),
-        _buildInfoRow(
-          '下载速度',
-          _formatSpeed(network.downloadSpeed),
+        Row(
+          children: [
+            Icon(Icons.arrow_upward, size: 16, color: Colors.blue.shade700),
+            const SizedBox(width: 4),
+            Text(_formatSpeed(network.uploadSpeed), style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+            const SizedBox(width: 16),
+            Icon(Icons.arrow_downward, size: 16, color: Colors.green.shade700),
+            const SizedBox(width: 4),
+            Text(_formatSpeed(network.downloadSpeed), style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+          ],
         ),
       ],
     );
