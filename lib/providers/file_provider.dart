@@ -17,6 +17,13 @@ class FileProvider with ChangeNotifier {
   String? get error => _error;
   bool get isGridView => _isGridView;
 
+  /// 当前路径是否有上级目录（用于手势返回先回上级再退出）
+  bool get hasParentDirectory {
+    if (_currentPath == '/' || _currentPath.trim().isEmpty) return false;
+    final parts = _currentPath.split('/').where((p) => p.isNotEmpty).toList();
+    return parts.length > 1;
+  }
+
   Future<void> loadFolder(String path) async {
     _isLoading = true;
     _error = null;

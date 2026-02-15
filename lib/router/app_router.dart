@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../screens/login_screen.dart';
@@ -7,6 +6,8 @@ import '../screens/server_config_screen.dart';
 import '../screens/welcome_screen.dart';
 import '../screens/file_browser_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/app_store_screen.dart';
+import '../screens/app_detail_screen.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 
@@ -87,6 +88,19 @@ class AppRouter {
           builder: (context, state) {
             final path = state.uri.queryParameters['path'];
             return FileBrowserScreen(initialPath: path);
+          },
+        ),
+        GoRoute(
+          path: '/app-store',
+          name: 'app-store',
+          builder: (context, state) => const AppStoreScreen(),
+        ),
+        GoRoute(
+          path: '/app/:id',
+          name: 'app-detail',
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return AppDetailScreen(appId: id);
           },
         ),
       ],

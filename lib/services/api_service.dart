@@ -6,6 +6,7 @@ import '../models/user.dart';
 import '../models/system_info.dart';
 import '../models/app_info.dart';
 import '../models/file_item.dart';
+import '../models/store_app_info.dart';
 import 'server_config_service.dart';
 
 class ApiService {
@@ -53,7 +54,8 @@ class ApiService {
     }
   }
 
-  Future<http.Response> _get(String endpoint, {Map<String, String>? queryParams, bool includeAuth = true}) async {
+  Future<http.Response> _get(String endpoint,
+      {Map<String, String>? queryParams, bool includeAuth = true, Map<String, String>? headers}) async {
     final baseUrl = await getBaseUrl();
     if (baseUrl == null) {
       throw Exception('No active server configured');
@@ -64,9 +66,10 @@ class ApiService {
       uri = uri.replace(queryParameters: queryParams);
     }
 
-    final headers = await _getHeaders(includeAuth: includeAuth);
+    final h = await _getHeaders(includeAuth: includeAuth);
+    if (headers != null) h.addAll(headers);
     try {
-      return await http.get(uri, headers: headers);
+      return await http.get(uri, headers: h);
     } catch (e, st) {
       _logNetworkException('GET $endpoint', e, st);
       rethrow;
@@ -87,6 +90,24 @@ class ApiService {
         headers: headers,
         body: body != null ? jsonEncode(body) : null,
       );
+    } catch (e, st) {
+      _logNetworkException('POST $endpoint', e, st);
+      rethrow;
+    }
+  }
+
+  /// POST 原始 body，用于 application/yaml 等
+  Future<http.Response> _postRaw(String endpoint,
+      {required String body, String contentType = 'application/yaml', bool includeAuth = true}) async {
+    final baseUrl = await getBaseUrl();
+    if (baseUrl == null) {
+      throw Exception('No active server configured');
+    }
+    final uri = Uri.parse('$baseUrl$endpoint');
+    final headers = await _getHeaders(includeAuth: includeAuth);
+    headers['Content-Type'] = contentType;
+    try {
+      return await http.post(uri, headers: headers, body: body);
     } catch (e, st) {
       _logNetworkException('POST $endpoint', e, st);
       rethrow;
@@ -356,7 +377,7 @@ class ApiService {
         debugPrint('[ApiService] getAppList 解析错误: 根节点不是 Map，类型为 ${decoded.runtimeType}');
         throw Exception('Failed to get app list: invalid response format (root is not object)');
       }
-      final json = decoded as Map<String, dynamic>;
+      final json = decoded;
       // /v2/app_management/web/appgrid 可能只返回 { data: [...], message: "..." }，无 success 字段
       final success = json['success'];
       if (success != null && success != 200 && success != 201) {
@@ -403,7 +424,7 @@ class ApiService {
     if (title is String) {
       displayName = title;
     } else if (title is Map<String, dynamic>) {
-      final custom = title['custom']?.toString()?.trim();
+      final custom = title['custom']?.toString().trim();
       if (custom != null && custom.isNotEmpty) {
         displayName = custom;
       } else {
@@ -659,4 +680,92 @@ class ApiService {
       throw Exception(json['message'] as String? ?? 'Failed to check app version');
     }
   }
+
+  // ---------- App Store (应用市场) API，与 CasaOS-UI / OpenAPI 一致 ----------
+
+  /// GET /v2/app_management/categories 分类列表
+  Future<List<Map<String, dynamic>>> getStoreCategories() async {
+    final response = await _get('/v2/app_management/categories');
+    if (response.statusCode != 200) {
+      _logErrorResponse('getStoreCategories', response);
+      throw Exception('Failed to get categories');
+    }
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = json['data'];
+    if (data is List) {
+      return data.map((e) => e as Map<String, dynamic>).toList();
+    }
+    return [];
+  }
+
+  /// GET /v2/app_management/apps 应用市场列表；category/author_type 可选，recommend 为 true 时仅推荐
+  Future<StoreAppListResult> getStoreAppList({
+    String? category,
+    String? authorType,
+    bool recommend = false,
+  }) async {
+    final queryParams = <String, String>{};
+    if (category != null && category.isNotEmpty) queryParams['category'] = category;
+    if (authorType != null && authorType.isNotEmpty) queryParams['author_type'] = authorType;
+    if (recommend) queryParams['recommend'] = 'true';
+    final response = await _get('/v2/app_management/apps', queryParams: queryParams.isEmpty ? null : queryParams);
+    if (response.statusCode != 200) {
+      _logErrorResponse('getStoreAppList', response);
+      throw Exception('Failed to get app store list');
+    }
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = json['data'] as Map<String, dynamic>?;
+    if (data == null) return StoreAppListResult(installedIds: [], list: []);
+
+    final installedRaw = data['installed'];
+    final listRaw = data['list'] as Map<String, dynamic>? ?? {};
+    final installedIds = (installedRaw is List)
+        ? installedRaw.map((e) => e.toString()).toSet().toList()
+        : <String>[];
+    final list = <StoreAppInfo>[];
+    for (final entry in listRaw.entries) {
+      final id = entry.key.toString();
+      final value = entry.value;
+      if (value is Map<String, dynamic>) {
+        list.add(StoreAppInfo.fromStoreEntry(id, value));
+      }
+    }
+    return StoreAppListResult(installedIds: installedIds, list: list);
+  }
+
+  /// GET /v2/app_management/apps/{id}/compose 获取应用的 compose YAML（用于安装）
+  Future<String> getStoreAppCompose(String storeAppId) async {
+    final response = await _get(
+      '/v2/app_management/apps/$storeAppId/compose',
+      includeAuth: true,
+      headers: {'Accept': 'application/yaml'},
+    );
+    if (response.statusCode != 200) {
+      _logErrorResponse('getStoreAppCompose', response);
+      throw Exception('Failed to get app compose');
+    }
+    return response.body;
+  }
+
+  /// POST /v2/app_management/compose 使用 YAML 安装应用（content-type: application/yaml）
+  Future<void> installComposeAppYaml(String composeYaml) async {
+    final response = await _postRaw(
+      '/v2/app_management/compose',
+      body: composeYaml,
+      contentType: 'application/yaml',
+    );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      _logErrorResponse('installComposeAppYaml', response);
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(json['message'] as String? ?? 'Failed to install app');
+    }
+  }
+}
+
+/// 应用市场列表返回：已安装的 store id 列表 + 应用列表
+class StoreAppListResult {
+  final List<String> installedIds;
+  final List<StoreAppInfo> list;
+
+  StoreAppListResult({required this.installedIds, required this.list});
 }

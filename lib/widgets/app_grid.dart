@@ -1,6 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import '../models/app_info.dart';
+
+/// 与应用卡片样式一致的固定入口卡片（如 App Store、Files）
+class SystemEntryCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const SystemEntryCard({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 48),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class AppGrid extends StatelessWidget {
   final List<AppInfo> apps;
@@ -8,14 +54,14 @@ class AppGrid extends StatelessWidget {
   const AppGrid({super.key, required this.apps});
 
   /// 桌面端根据宽度自适应每行数量，移动端保持适中尺寸
-  static const double _minCellWidth = 140.0;
+  static const double minCellWidth = 140.0;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final count = (width / _minCellWidth).floor().clamp(2, 12);
+        final count = (width / minCellWidth).floor().clamp(2, 12);
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -28,7 +74,7 @@ class AppGrid extends StatelessWidget {
           itemCount: apps.length,
           itemBuilder: (context, index) {
             final app = apps[index];
-            return _AppCard(app: app);
+            return AppCard(app: app);
           },
         );
       },
@@ -36,10 +82,11 @@ class AppGrid extends StatelessWidget {
   }
 }
 
-class _AppCard extends StatelessWidget {
+/// 单个应用卡片，与 SystemEntryCard 样式一致
+class AppCard extends StatelessWidget {
   final AppInfo app;
 
-  const _AppCard({required this.app});
+  const AppCard({super.key, required this.app});
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +94,7 @@ class _AppCard extends StatelessWidget {
       elevation: 2,
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to app details
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('打开应用: ${app.name}')),
-          );
+          context.push('/app/${app.id}');
         },
         borderRadius: BorderRadius.circular(8),
         child: Padding(

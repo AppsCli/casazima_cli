@@ -48,13 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(l10n.appTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.folder),
-            onPressed: () {
-              context.push('/files');
-            },
-            tooltip: l10n.files,
-          ),
-          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
               context.push('/server-config');
@@ -214,24 +207,46 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
 
-                  if (provider.apps.isEmpty) {
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Center(
-                          child: Text(l10n.noApps),
-                        ),
-                      ),
-                    );
-                  }
-
                   final normalApps = provider.apps.where((a) => !a.isLegacyContainer).toList();
                   final legacyApps = provider.apps.where((a) => a.isLegacyContainer).toList();
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (normalApps.isNotEmpty) AppGrid(apps: normalApps),
+                      // 固定前两项：App Store、Files，与应用列表样式一致
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final count = (constraints.maxWidth / AppGrid.minCellWidth).floor().clamp(2, 12);
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: count,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 1.2,
+                            ),
+                            itemCount: 2 + normalApps.length,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return SystemEntryCard(
+                                  icon: Icons.store,
+                                  label: 'App Store',
+                                  onTap: () => context.push('/app-store'),
+                                );
+                              }
+                              if (index == 1) {
+                                return SystemEntryCard(
+                                  icon: Icons.folder,
+                                  label: 'Files',
+                                  onTap: () => context.push('/files'),
+                                );
+                              }
+                              return AppCard(app: normalApps[index - 2]);
+                            },
+                          );
+                        },
+                      ),
                       if (legacyApps.isNotEmpty) ...[
                         if (normalApps.isNotEmpty) const SizedBox(height: 24),
                         Text(

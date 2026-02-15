@@ -177,20 +177,31 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
     );
   }
 
+  void _goToPreviousPage() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/home');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Consumer<FileProvider>(
+      builder: (context, provider, _) {
+        return PopScope(
+          canPop: !provider.hasParentDirectory,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop && provider.hasParentDirectory) {
+              provider.navigateUp();
+            }
+          },
+          child: Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.go('/home');
-            }
-          },
-          tooltip: '返回',
+          onPressed: _goToPreviousPage,
+          tooltip: '返回上一页',
         ),
         title: Consumer<FileProvider>(
           builder: (context, provider, child) {
@@ -207,6 +218,12 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
           },
         ),
         actions: [
+          if (provider.hasParentDirectory)
+            IconButton(
+              icon: const Icon(Icons.subdirectory_arrow_left),
+              onPressed: () => provider.navigateUp(),
+              tooltip: '上级目录',
+            ),
           Consumer<FileProvider>(
             builder: (context, provider, child) {
               return IconButton(
@@ -367,7 +384,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
           );
         },
       ),
+    ),
     );
+  },
+  );
   }
 
   /// 桌面端根据宽度自适应每行数量，使每项大小适中

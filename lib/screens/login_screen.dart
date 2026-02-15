@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/server_config_provider.dart';
 import '../services/api_service.dart';
+
+const _keyRememberCredentials = 'remember_credentials';
+const _keySavedUsername = 'saved_username';
+const _keySavedPassword = 'saved_password';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,14 +24,28 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _rememberCredentials = false;
 
   @override
   void initState() {
     super.initState();
-    // Check if initialization is needed when screen loads
+    _loadRememberedCredentials();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkInit();
     });
+  }
+
+  Future<void> _loadRememberedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final remember = prefs.getBool(_keyRememberCredentials) ?? false;
+    if (!mounted) return;
+    setState(() => _rememberCredentials = remember);
+    if (remember) {
+      final username = prefs.getString(_keySavedUsername);
+      final password = prefs.getString(_keySavedPassword);
+      if (username != null) _usernameController.text = username;
+      if (password != null) _passwordController.text = password;
+    }
   }
 
   @override
@@ -92,6 +111,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mounted) {
       if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        if (_rememberCredentials) {
+          await prefs.setBool(_keyRememberCredentials, true);
+          await prefs.setString(_keySavedUsername, _usernameController.text);
+          await prefs.setString(_keySavedPassword, _passwordController.text);
+        } else {
+          await prefs.setBool(_keyRememberCredentials, false);
+          await prefs.remove(_keySavedUsername);
+          await prefs.remove(_keySavedPassword);
+        }
         if (context.mounted) {
           context.go('/home');
         }
@@ -229,6 +258,33 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                             return null;
                           },
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '记住账号密码',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
+                            Switch(
+                              value: _rememberCredentials,
+                              onChanged: (value) {
+                                setState(() => _rememberCredentials = value);
+                                if (!value) {
+                                  SharedPreferences.getInstance().then((prefs) {
+                                    prefs.remove(_keySavedUsername);
+                                    prefs.remove(_keySavedPassword);
+                                    prefs.setBool(_keyRememberCredentials, false);
+                                  });
+                                }
+                              },
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 24),
                         Consumer<AuthProvider>(
