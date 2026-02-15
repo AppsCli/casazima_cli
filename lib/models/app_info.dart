@@ -1,6 +1,8 @@
 class AppInfo {
   final String id;
   final String name;
+  /// 用于 compose API 的应用名（appgrid 返回的 name，即 compose 项目名）
+  final String? composeName;
   final String? icon;
   final String? description;
   final String? version;
@@ -13,6 +15,7 @@ class AppInfo {
   AppInfo({
     required this.id,
     required this.name,
+    this.composeName,
     this.icon,
     this.description,
     this.version,
@@ -26,6 +29,7 @@ class AppInfo {
     return AppInfo(
       id: json['id']?.toString() ?? '',
       name: json['name'] as String? ?? '',
+      composeName: json['compose_name'] as String?,
       icon: json['icon'] as String?,
       description: json['description'] as String?,
       version: json['version'] as String?,
@@ -40,6 +44,7 @@ class AppInfo {
     return {
       'id': id,
       'name': name,
+      'compose_name': composeName,
       'icon': icon,
       'description': description,
       'version': version,
