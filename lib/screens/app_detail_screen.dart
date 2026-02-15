@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../models/app_info.dart';
 import '../providers/app_provider.dart';
@@ -113,14 +114,17 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
               if (app.icon != null)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.network(
-                    app.icon!,
+                  child: CachedNetworkImage(
+                    imageUrl: app.icon!,
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.apps, size: 80);
-                    },
+                    placeholder: (_, __) => const SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                    ),
+                    errorWidget: (_, __, ___) => const Icon(Icons.apps, size: 80),
                   ),
                 )
               else

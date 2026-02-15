@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/app_info.dart';
 
 class AppGrid extends StatelessWidget {
@@ -58,13 +59,17 @@ class _AppCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (app.icon != null)
-                Image.network(
-                  app.icon!,
+                CachedNetworkImage(
+                  imageUrl: app.icon!,
                   width: 48,
                   height: 48,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.apps, size: 48);
-                  },
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => const SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  ),
+                  errorWidget: (_, __, ___) => const Icon(Icons.apps, size: 48),
                 )
               else
                 const Icon(Icons.apps, size: 48),
