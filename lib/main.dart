@@ -55,7 +55,7 @@ class _MaterialAppWithRouterState extends State<_MaterialAppWithRouter> {
     return Consumer2<ThemeProvider, LocaleProvider>(
       builder: (context, themeProvider, localeProvider, child) {
         return MaterialApp.router(
-          title: 'CasaOS / ZimaOS Client',
+          title: 'CasaZimaCli',
           locale: localeProvider.effectiveLocale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
