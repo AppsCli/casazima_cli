@@ -112,9 +112,9 @@ msix_config:
   publisher_display_name: OpenIoTHub Cloud
   identity_name: 38916OpenIoTHubCloud.CasaZimaCli
   #  msix_version: 1.0.0.0
-  logo_path: .\assets\images\logos\casazima_cli_logo.png
-  start_menu_icon_path: .\assets\images\logos\casazima_cli_logo.png
-  tile_icon_path: .\assets\images\logos\casazima_cli_logo.png
+  logo_path: .\assets\icon\app_icon.png
+  start_menu_icon_path: .\assets\icon\app_icon.png
+  tile_icon_path: .\assets\icon\app_icon.png
   icons_background_color: transparent
   capabilities: internetClient
   store: true

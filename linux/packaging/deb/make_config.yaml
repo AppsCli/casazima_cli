@@ -1,0 +1,40 @@
+# DEB 打包配置文件
+# 用于 flutter_distributor 的 deb 目标
+
+# 在系统中显示的名称（桌面快捷方式名称）
+display_name: CasaZima CLI
+
+# Debian/apt 包名，应为小写，可使用 - 和 .
+package_name: casazima-cli
+
+maintainer:
+  name: iotserv
+  email: iotserv@users.noreply.github.com
+
+# 优先级: required, important, standard, optional, extra
+priority: optional
+
+# 分类: 参考 https://www.debian.org/doc/debian-policy/ch-archive.html#s-subsections
+section: x11
+
+# 安装后大小（KB），Flutter 应用约 40-50MB
+installed_size: 45000
+
+# 桌面分类
+categories:
+  - Network
+
+# 应用分类名称
+generic_name: CasaZima CLI desktop app
+
+# 启动时通知
+startup_notify: true
+
+# WM 类名，用于正确识别应用窗口
+startup_wm_class: casazima_cli
+
+# 应用图标路径（相对于项目根目录）
+icon: assets/icons/com.iotserv.CasaZimaCli.svg
+
+# AppStream 元数据文件（可选）
+metainfo: packaging/linux/com.iotserv.CasaZimaCli.metainfo.xml
