@@ -1,0 +1,21 @@
+# AppImage 打包配置文件
+# 用于 flutter_distributor 的 appimage 目标
+
+# 在系统中显示的名称（桌面快捷方式名称）
+display_name: CasaZima CLI
+
+# 应用图标路径（必填）
+icon: assets/icons/com.iotserv.CasaZimaCli.svg
+
+# 应用分类名称
+generic_name: CasaZima CLI desktop app
+
+# 启动时通知
+startup_notify: true
+
+# 桌面分类
+categories:
+  - Network
+
+# AppStream 元数据文件
+metainfo: packaging/linux/com.iotserv.CasaZimaCli.metainfo.xml

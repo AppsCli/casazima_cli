@@ -1,0 +1,37 @@
+# RPM 打包配置文件
+# 用于 flutter_distributor 的 rpm 目标
+
+# 在系统中显示的名称（桌面快捷方式名称）
+display_name: CasaZima CLI
+
+# 应用分类名称
+generic_name: CasaZima CLI desktop app
+
+# 启动时通知
+startup_notify: true
+
+# 桌面分类
+categories:
+  - Network
+
+# 应用图标路径（RPM spec 需要 PNG 格式，使用 snap 图标）
+icon: snap/gui/casazima_cli.png
+
+# AppStream 元数据文件
+metainfo: packaging/linux/com.iotserv.CasaZimaCli.metainfo.xml
+
+# RPM 包摘要
+summary: CasaZima CLI desktop application
+
+# RPM 包分组
+group: Applications/Network
+
+# 打包者信息
+packager: iotserv
+packagerEmail: iotserv@users.noreply.github.com
+
+# 许可证
+license: MIT
+
+# 项目主页
+url: https://github.com/iotserv/casazima_cli
