@@ -1,0 +1,22 @@
+name: casazima-cli
+version: 1.0.0
+summary: CasaZima CLI App
+description: CasaZima CLI desktop application
+
+confinement: strict
+base: core22
+grade: stable
+
+apps:
+  casazima-cli:
+    command: casazima_cli
+    extensions: [gnome]
+    plugs:
+      - network
+      - network-bind
+
+parts:
+  casazima-cli:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart

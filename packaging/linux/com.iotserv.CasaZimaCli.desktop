@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=CasaZima CLI
+Name[zh_CN]=CasaZima CLI
+Comment=CasaZima CLI desktop app
+Comment[zh_CN]=CasaZima CLI 桌面版
+Categories=Network;
+
+Icon=com.iotserv.CasaZimaCli
+Exec=casazima_cli
+Terminal=false
+StartupWMClass=casazima_cli

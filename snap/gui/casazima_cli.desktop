@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=CasaZima CLI
+Name[zh_CN]=CasaZima CLI
+Comment=CasaZima CLI desktop application
+Comment[zh_CN]=CasaZima CLI 桌面版
+Exec=casazima_cli
+Icon=${SNAP}/meta/gui/casazima_cli.png
+Terminal=false
+Type=Application
+Categories=Network;

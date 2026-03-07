@@ -76,6 +76,9 @@ dev_dependencies:
   build_runner: ^2.4.7
   json_serializable: ^6.7.1
 
+  # Windows MSIX 打包工具（用于微软应用商店）
+  msix: ^3.16.7
+
   # App launcher icons generator
   flutter_launcher_icons: ^0.13.1
 
@@ -95,6 +98,26 @@ flutter_launcher_icons:
   # Optional: You can specify different paths for different platforms
   # android: "assets/icon/android-icon.png"
   # ios: "assets/icon/ios-icon.png"
+
+# 微软应用市场发布配置（需与 Partner Center 产品标识一致）
+# Package/Identity/Name = identity_name
+# Package/Identity/Publisher = publisher
+# Package/Properties/PublisherDisplayName = publisher_display_name
+# Store ID: 9N9F0SBBCD92
+# Package Family Name (PFN): 38916OpenIoTHubCloud.CasaZimaCli_n13avf7sg128e
+# Package SID: S-1-15-2-3013276944-1920917939-444752947-4106723387-2316007860-2390972201-332601062
+msix_config:
+  display_name: CasaZimaCli
+  publisher: CN=5F64CEA2-463E-41A3-AE89-6979242A61DF
+  publisher_display_name: OpenIoTHub Cloud
+  identity_name: 38916OpenIoTHubCloud.CasaZimaCli
+  #  msix_version: 1.0.0.0
+  logo_path: .\assets\images\logos\casazima_cli_logo.png
+  start_menu_icon_path: .\assets\images\logos\casazima_cli_logo.png
+  tile_icon_path: .\assets\images\logos\casazima_cli_logo.png
+  icons_background_color: transparent
+  capabilities: internetClient
+  store: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
