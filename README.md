@@ -109,6 +109,28 @@ CasaOS 官方前端代码位于：
   - macOS（已包含 iOS / macOS 构建工程）
   - Windows / Linux（已包含对应 Flutter Runner）
 
+### Linux 构建额外依赖
+
+编译 Linux 版本时，`audioplayers` 插件需要 GStreamer 开发库。若出现 `gstreamer-1.0 not found` 错误，请先安装：
+
+**Ubuntu / Debian：**
+
+```bash
+sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+```
+
+**Fedora：**
+
+```bash
+sudo dnf install gstreamer1-devel gstreamer1-plugins-base-devel
+```
+
+**Arch Linux：**
+
+```bash
+sudo pacman -S gstreamer gst-plugins-base
+```
+
 ---
 
 ## 安装与运行
