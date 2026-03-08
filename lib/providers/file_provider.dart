@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import '../models/file_item.dart';
 import '../services/api_service.dart';
@@ -108,5 +109,36 @@ class FileProvider with ChangeNotifier {
   void toggleView() {
     _isGridView = !_isGridView;
     notifyListeners();
+  }
+
+  /// 下载文件到本地（与 CasaOS-UI downloadFile 一致，使用 /v1/file 接口）
+  /// 返回保存路径，用户取消则返回 null
+  Future<String?> downloadFile(FileItem item) async {
+    final bytes = await _apiService.downloadFileAsBytes(item.path);
+    return FilePicker.platform.saveFile(
+      fileName: item.name,
+      bytes: bytes,
+    );
+  }
+
+  /// 获取文件内容（用于文本预览，与 CasaOS-UI file.getContent 一致：/v1/file/content）
+  Future<String> getFileContent(String path) async {
+    return _apiService.getFileContent(path);
+  }
+
+  /// 下载文件为字节（用于图片预览或下载，与 CasaOS-UI file.download 一致：/v1/file）
+  Future<Uint8List> downloadFileAsBytes(String path) async {
+    return _apiService.downloadFileAsBytes(path);
+  }
+
+  /// 获取文件流式播放 URL（与 CasaOS-UI getFileUrl 一致：/v3/file?path=...&token=...）
+  /// 用于视频/音频流式预览
+  Future<({String url, Map<String, String> headers})> getFileStreamingUrl(String path) async {
+    return _apiService.getFileStreamingUrl(path);
+  }
+
+  /// 下载视频到临时文件（用于网络播放失败时的 fallback）
+  Future<String> downloadVideoToTemp(String path, String fileName) async {
+    return _apiService.downloadFileToTemp(path, fileName);
   }
 }

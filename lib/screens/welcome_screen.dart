@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 
@@ -81,8 +82,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       if (_initKey == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('无法获取初始化密钥，请检查服务器状态'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.cannotGetInitKey),
               backgroundColor: Colors.red,
             ),
           );
@@ -137,7 +138,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('初始化失败：$e'),
+            content: Text(AppLocalizations.of(context)!.initFailed(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -207,6 +208,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Widget _buildStep1() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -216,18 +218,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           color: Colors.blue,
         ),
         const SizedBox(height: 24),
-        const Text(
-          '欢迎使用 CasaOS / ZimaOS',
-          style: TextStyle(
+        Text(
+          l10n.welcomeToCasaOS,
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
-        const Text(
-          '让我们先创建你的初始账户。',
-          style: TextStyle(
+        Text(
+          l10n.createAccountHint,
+          style: const TextStyle(
             fontSize: 16,
           ),
           textAlign: TextAlign.center,
@@ -240,7 +242,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            child: const Text('开始 →'),
+            child: Text(l10n.start),
           ),
         ),
       ],
@@ -248,15 +250,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Widget _buildStep2() {
+    final l10n = AppLocalizations.of(context)!;
     return Form(
       key: _formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            '创建账户',
-            style: TextStyle(
+          Text(
+            l10n.createAccount,
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -265,13 +268,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           const SizedBox(height: 24),
           TextFormField(
             controller: _usernameController,
-            decoration: const InputDecoration(
-              labelText: '用户名',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.username,
+              border: const OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return '请输入用户名';
+                return l10n.usernameRequired;
               }
               return null;
             },
@@ -279,17 +282,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _passwordController,
-            decoration: const InputDecoration(
-              labelText: '密码',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.password,
+              border: const OutlineInputBorder(),
             ),
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return '请输入密码';
+                return l10n.passwordRequired;
               }
               if (value.length < 5) {
-                return '密码至少需要 5 个字符';
+                return l10n.passwordMinLength;
               }
               return null;
             },
@@ -297,17 +300,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _confirmController,
-            decoration: const InputDecoration(
-              labelText: '确认密码',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.confirmPassword,
+              border: const OutlineInputBorder(),
             ),
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return '请再次输入密码';
+                return l10n.confirmPasswordRequired;
               }
               if (value != _passwordController.text) {
-                return '两次输入的密码不一致';
+                return l10n.passwordMismatch;
               }
               return null;
             },
@@ -329,7 +332,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
-                  : const Text('创建'),
+                  : Text(l10n.create),
             ),
           ),
         ],
@@ -338,6 +341,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Widget _buildStep3() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -347,18 +351,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           color: Colors.green,
         ),
         const SizedBox(height: 24),
-        const Text(
-          '全部搞定！',
-          style: TextStyle(
+        Text(
+          l10n.allDone,
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
-        const Text(
-          '你的账户已经创建完成，马上进入桌面体验 CasaOS / ZimaOS。',
-          style: TextStyle(
+        Text(
+          l10n.accountCreatedHint,
+          style: const TextStyle(
             fontSize: 16,
           ),
           textAlign: TextAlign.center,
@@ -371,7 +375,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            child: const Text('进入桌面'),
+            child: Text(l10n.enterDesktop),
           ),
         ),
       ],

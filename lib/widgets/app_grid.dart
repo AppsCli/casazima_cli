@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 import '../models/app_info.dart';
 import '../providers/app_provider.dart';
 import '../services/api_service.dart';
@@ -115,8 +116,9 @@ class _AppCardState extends State<AppCard> {
 
   Future<void> _openApp() async {
     final app = widget.app;
+    final l10n = AppLocalizations.of(context)!;
     if (_composeName == null) {
-      _showSnack('无法获取应用地址');
+      _showSnack(l10n.cannotGetAppAddress);
       return;
     }
     setState(() => _isLoading = true);
@@ -132,13 +134,13 @@ class _AppCardState extends State<AppCard> {
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
         } else {
-          _showSnack('无法打开: $url');
+          _showSnack(l10n.cannotOpen(url));
         }
       } else {
-        _showSnack('无法获取应用地址');
+        _showSnack(l10n.cannotGetAppAddress);
       }
     } catch (e) {
-      _showSnack('打开失败: $e');
+      _showSnack(l10n.openFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -147,6 +149,7 @@ class _AppCardState extends State<AppCard> {
   /// 统一执行 start/restart/stop 并刷新列表（与 CasaOS-UI toggle/restartApp 一致）
   Future<void> _setAppState(String status) async {
     final name = _composeName ?? widget.app.name;
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
     try {
       if (_isV2App) {
@@ -154,14 +157,14 @@ class _AppCardState extends State<AppCard> {
       } else if (_isLegacyContainer) {
         await _api.updateContainerState(name, status);
       } else {
-        _showSnack('当前应用类型不支持此操作');
+        _showSnack(l10n.appTypeNotSupported);
         return;
       }
-      _showSnack(status == 'start' ? '正在启动' : status == 'restart' ? '正在重启' : '已关闭');
+      _showSnack(status == 'start' ? l10n.starting : status == 'restart' ? l10n.restarting : l10n.closed);
       await Future.delayed(const Duration(milliseconds: 800));
       _refreshList();
     } catch (e) {
-      _showSnack('操作失败: $e');
+      _showSnack(l10n.operationFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -188,10 +191,11 @@ class _AppCardState extends State<AppCard> {
 
   void _menuTips() {
     final app = widget.app;
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${app.name} - 提示'),
+        title: Text(l10n.tipsTitle(app.name)),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -200,14 +204,14 @@ class _AppCardState extends State<AppCard> {
               if (app.description != null && app.description!.isNotEmpty)
                 Text(app.description!),
               if (app.description == null || app.description!.isEmpty)
-                const Text('暂无说明。如需修改配置请前往设置。'),
+                Text(l10n.noDescription),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('确定'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -219,8 +223,9 @@ class _AppCardState extends State<AppCard> {
   }
 
   Future<void> _menuCheckUpdate() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_composeName == null) {
-      _showSnack('当前应用不支持检查更新');
+      _showSnack(l10n.checkUpdateNotSupported);
       return;
     }
     setState(() => _isLoading = true);
@@ -229,7 +234,7 @@ class _AppCardState extends State<AppCard> {
       _showSnack(msg);
       _refreshList();
     } catch (e) {
-      _showSnack('更新失败: $e');
+      _showSnack(l10n.updateFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -237,21 +242,22 @@ class _AppCardState extends State<AppCard> {
 
   Future<void> _menuUninstall() async {
     final name = _composeName ?? widget.app.name;
+    final l10n = AppLocalizations.of(context)!;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('确认卸载'),
+        title: Text(l10n.confirmUninstall),
         content: Text(
-          '确定要卸载「${widget.app.name}」吗？\n卸载后数据无法恢复。',
+          l10n.uninstallConfirmMessage(widget.app.name),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('卸载', style: TextStyle(color: Colors.red)),
+            child: Text(l10n.uninstall, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -264,13 +270,13 @@ class _AppCardState extends State<AppCard> {
       } else if (_isLegacyContainer) {
         await _api.uninstallContainer(name, deleteConfig: false);
       } else {
-        _showSnack('无法卸载');
+        _showSnack(l10n.cannotUninstall);
         return;
       }
-      _showSnack('已卸载');
+      _showSnack(l10n.uninstalled);
       _refreshList();
     } catch (e) {
-      _showSnack('卸载失败: $e');
+      _showSnack(l10n.uninstallFailed(e.toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -278,8 +284,9 @@ class _AppCardState extends State<AppCard> {
 
   Future<void> _menuRestart() async {
     final name = _composeName ?? widget.app.name;
+    final l10n = AppLocalizations.of(context)!;
     if (name.isEmpty) {
-      _showSnack('无法重启');
+      _showSnack(l10n.cannotRestart);
       return;
     }
     await _setAppState('restart');
@@ -287,8 +294,9 @@ class _AppCardState extends State<AppCard> {
 
   Future<void> _menuClose() async {
     final name = _composeName ?? widget.app.name;
+    final l10n = AppLocalizations.of(context)!;
     if (name.isEmpty) {
-      _showSnack('无法关闭');
+      _showSnack(l10n.cannotClose);
       return;
     }
     await _setAppState('stop');
@@ -353,7 +361,7 @@ class _AppCardState extends State<AppCard> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          '运行中',
+                          AppLocalizations.of(context)!.running,
                           style: TextStyle(
                             fontSize: 10,
                             color: Colors.green.shade800,
@@ -411,33 +419,36 @@ class _AppCardState extends State<AppCard> {
                       break;
                   }
                 },
-                itemBuilder: (ctx) => [
-                  PopupMenuItem(
-                    value: 'open',
-                    child: Text(_isLegacyContainer ? '打开' : (running ? '打开' : '启动并打开')),
-                  ),
-                  if (_isV2App) const PopupMenuItem(value: 'tips', child: Text('提示')),
-                  if (_isV2App) const PopupMenuItem(value: 'setting', child: Text('设置')),
-                  if (_isV2App)
-                    const PopupMenuItem(
-                      value: 'check_update',
-                      child: Text('检查并更新'),
+                itemBuilder: (ctx) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return [
+                    PopupMenuItem(
+                      value: 'open',
+                      child: Text(_isLegacyContainer ? l10n.open : (running ? l10n.open : l10n.launchAndOpen)),
                     ),
-                  const PopupMenuItem(
-                    value: 'uninstall',
-                    child: Text('卸载', style: TextStyle(color: Colors.red)),
-                  ),
-                  PopupMenuItem(
-                    value: 'restart',
-                    enabled: running,
-                    child: const Text('重启'),
-                  ),
-                  PopupMenuItem(
-                    value: 'close',
-                    enabled: running,
-                    child: const Text('关闭'),
-                  ),
-                ],
+                    if (_isV2App) PopupMenuItem(value: 'tips', child: Text(l10n.tips)),
+                    if (_isV2App) PopupMenuItem(value: 'setting', child: Text(l10n.settings)),
+                    if (_isV2App)
+                      PopupMenuItem(
+                        value: 'check_update',
+                        child: Text(l10n.checkAndUpdate),
+                      ),
+                    PopupMenuItem(
+                      value: 'uninstall',
+                      child: Text(l10n.uninstall, style: const TextStyle(color: Colors.red)),
+                    ),
+                    PopupMenuItem(
+                      value: 'restart',
+                      enabled: running,
+                      child: Text(l10n.restart),
+                    ),
+                    PopupMenuItem(
+                      value: 'close',
+                      enabled: running,
+                      child: Text(l10n.close),
+                    ),
+                  ];
+                },
               ),
             ),
         ],

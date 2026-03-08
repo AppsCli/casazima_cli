@@ -94,9 +94,10 @@ class _LoginScreenState extends State<LoginScreen> {
     // Check if there's an active server
     if (!serverProvider.hasActiveServer) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('请先配置并激活一个服务器'),
+          SnackBar(
+            content: Text(l10n.configureServerFirst),
             backgroundColor: Colors.red,
           ),
         );
@@ -125,9 +126,10 @@ class _LoginScreenState extends State<LoginScreen> {
           context.go('/home');
         }
       } else {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.error ?? '登录失败'),
+            content: Text(authProvider.error ?? l10n.loginFailed),
             backgroundColor: Colors.red,
           ),
         );
@@ -205,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context.push('/server-config');
                                 },
                                 icon: const Icon(Icons.settings),
-                                label: const Text('配置服务器'),
+                                label: Text(l10n.configureServer),
                               );
                             }
                           },
@@ -213,15 +215,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 32),
                         TextFormField(
                           controller: _usernameController,
-                          decoration: const InputDecoration(
-                            labelText: '用户名',
-                            prefixIcon: Icon(Icons.person),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: l10n.username,
+                            prefixIcon: const Icon(Icons.person),
+                            border: const OutlineInputBorder(),
                           ),
                           textInputAction: TextInputAction.next,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return '请输入用户名';
+                              return l10n.usernameRequired;
                             }
                             return null;
                           },
@@ -230,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _passwordController,
                           decoration: InputDecoration(
-                            labelText: '密码',
+                            labelText: l10n.password,
                             prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -251,10 +253,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           onFieldSubmitted: (_) => _handleLogin(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return '请输入密码';
+                              return l10n.passwordRequired;
                             }
                             if (value.length < 5) {
-                              return '密码至少需要5个字符';
+                              return l10n.passwordMinLength;
                             }
                             return null;
                           },
@@ -264,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Expanded(
                               child: Text(
-                                '记住账号密码',
+                                l10n.rememberCredentials,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade700,
@@ -312,9 +314,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         ),
                                       )
-                                    : const Text(
-                                        '登录',
-                                        style: TextStyle(fontSize: 16),
+                                    : Text(
+                                        l10n.login,
+                                        style: const TextStyle(fontSize: 16),
                                       ),
                               ),
                             );
@@ -325,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             context.push('/server-config');
                           },
-                          child: const Text('服务器配置'),
+                          child: Text(l10n.serverConfig),
                         ),
                       ],
                     ),

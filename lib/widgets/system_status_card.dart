@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/system_info.dart';
 
 class SystemStatusCard extends StatelessWidget {
@@ -17,36 +18,37 @@ class SystemStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             if (systemInfo != null) ...[
-              _buildInfoRow('版本', systemInfo!.version),
+              _buildInfoRow(l10n.version, systemInfo!.version),
               const Divider(),
             ],
             if (hardwareInfo != null) ...[
               if (hardwareInfo!.cpu != null) ...[
-                _buildCpuInfo(hardwareInfo!.cpu!),
+                _buildCpuInfo(context, hardwareInfo!.cpu!),
                 const Divider(),
               ],
               if (hardwareInfo!.memory != null) ...[
-                _buildMemoryInfo(hardwareInfo!.memory!),
+                _buildMemoryInfo(context, hardwareInfo!.memory!),
                 const Divider(),
               ],
               if (hardwareInfo!.storageSummary != null) ...[
-                _buildStorageSummary(hardwareInfo!.storageSummary!),
+                _buildStorageSummary(context, hardwareInfo!.storageSummary!),
                 const Divider(),
               ],
               if (hardwareInfo!.disks != null && hardwareInfo!.disks!.isNotEmpty) ...[
-                _buildDiskInfo(hardwareInfo!.disks!),
+                _buildDiskInfo(context, hardwareInfo!.disks!),
                 const Divider(),
               ],
               if (hardwareInfo!.networks != null && hardwareInfo!.networks!.isNotEmpty) ...[
                 _buildNetworkSectionWithDropdown(context),
               ] else if (hardwareInfo!.network != null) ...[
-                _buildNetworkInfoFromSingle(hardwareInfo!.network!),
+                _buildNetworkInfoFromSingle(context, hardwareInfo!.network!),
               ],
             ],
           ],
@@ -77,15 +79,16 @@ class SystemStatusCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCpuInfo(CpuInfo cpu) {
+  Widget _buildCpuInfo(BuildContext context, CpuInfo cpu) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'CPU 占用率',
+            Text(
+              l10n.cpuUsage,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
@@ -110,7 +113,7 @@ class SystemStatusCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '核心数: ${cpu.cores}',
+          l10n.cores('${cpu.cores}'),
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey.shade600,
@@ -120,22 +123,23 @@ class SystemStatusCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMemoryInfo(MemoryInfo memory) {
+  Widget _buildMemoryInfo(BuildContext context, MemoryInfo memory) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              '内存 (RAM)',
+            Text(
+              l10n.memory,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
               ),
             ),
             Text(
-              '${memory.usedPercent.toStringAsFixed(1)}% 占用率',
+              l10n.memoryUsage(memory.usedPercent.toStringAsFixed(1)),
               style: TextStyle(
                 color: _getUsageColor(memory.usedPercent),
                 fontWeight: FontWeight.bold,
@@ -153,7 +157,7 @@ class SystemStatusCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '已用 ${memory.formattedUsed} / 总量 ${memory.formattedTotal}',
+          l10n.usedOfTotal(memory.formattedUsed, memory.formattedTotal),
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey.shade600,
@@ -163,12 +167,13 @@ class SystemStatusCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStorageSummary(StorageSummary storage) {
+  Widget _buildStorageSummary(BuildContext context, StorageSummary storage) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '存储空间',
+        Text(
+          l10n.storage,
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,
@@ -179,11 +184,11 @@ class SystemStatusCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '总计 ${storage.formattedTotal}',
+              l10n.totalLabel(storage.formattedTotal),
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             Text(
-              '已用 ${storage.formattedUsed} · ${storage.usedPercent.toStringAsFixed(1)}%',
+              l10n.usedLabel(storage.formattedUsed, storage.usedPercent.toStringAsFixed(1)),
               style: TextStyle(
                 fontSize: 12,
                 color: _getUsageColor(storage.usedPercent),
@@ -208,12 +213,13 @@ class SystemStatusCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDiskInfo(List<DiskInfo> disks) {
+  Widget _buildDiskInfo(BuildContext context, List<DiskInfo> disks) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '磁盘',
+        Text(
+          l10n.disk,
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,
@@ -266,6 +272,7 @@ class SystemStatusCard extends StatelessWidget {
   }
 
   Widget _buildNetworkSectionWithDropdown(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final nets = hardwareInfo!.networks!;
     final idx = selectedNetworkIndex.clamp(0, nets.length - 1);
     final current = nets[idx];
@@ -276,8 +283,8 @@ class SystemStatusCard extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              '网络状态',
+            Text(
+              l10n.networkStatus,
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
@@ -317,12 +324,13 @@ class SystemStatusCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNetworkInfoFromSingle(NetworkInfo network) {
+  Widget _buildNetworkInfoFromSingle(BuildContext context, NetworkInfo network) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '网络状态',
+        Text(
+          l10n.networkStatus,
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../l10n/app_localizations.dart';
 import '../models/server_config.dart';
 import '../providers/server_config_provider.dart';
 import '../services/server_config_service.dart';
@@ -42,10 +43,11 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
       _useHttps = false;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(server == null ? '添加服务器' : '编辑服务器'),
+        title: Text(server == null ? l10n.addServer : l10n.editServer),
         content: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -54,13 +56,13 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: '服务器名称',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.serverName,
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '请输入服务器名称';
+                      return l10n.serverNameRequired;
                     }
                     return null;
                   },
@@ -68,14 +70,14 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _hostController,
-                  decoration: const InputDecoration(
-                    labelText: '主机地址',
-                    border: OutlineInputBorder(),
-                    hintText: '192.168.1.100 或 casaos.local',
+                  decoration: InputDecoration(
+                    labelText: l10n.hostAddress,
+                    border: const OutlineInputBorder(),
+                    hintText: l10n.hostAddressHint,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '请输入主机地址';
+                      return l10n.hostAddressRequired;
                     }
                     return null;
                   },
@@ -83,25 +85,25 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _portController,
-                  decoration: const InputDecoration(
-                    labelText: '端口',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.port,
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '请输入端口';
+                      return l10n.portRequired;
                     }
                     final port = int.tryParse(value);
                     if (port == null || port < 1 || port > 65535) {
-                      return '请输入有效的端口号 (1-65535)';
+                      return l10n.portInvalid;
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
                 CheckboxListTile(
-                  title: const Text('使用 HTTPS'),
+                  title: Text(l10n.useHttps),
                   value: _useHttps,
                   onChanged: (value) {
                     setState(() {
@@ -116,7 +118,7 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -125,7 +127,7 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('保存'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -154,9 +156,10 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('服务器配置'),
+        title: Text(l10n.serverConfig),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -181,15 +184,15 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                 children: [
                   const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
-                  const Text(
-                    '还没有配置服务器',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  Text(
+                    l10n.noServerConfigured,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: () => _showServerDialog(),
                     icon: const Icon(Icons.add),
-                    label: const Text('添加服务器'),
+                    label: Text(l10n.addServer),
                   ),
                 ],
               ),
@@ -208,7 +211,7 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                     color: server.isActive ? Colors.green : Colors.grey,
                   ),
                   title: Text(server.name),
-                  subtitle: Text('${server.baseUrl}'),
+                  subtitle: Text(server.baseUrl),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -218,41 +221,41 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                           onPressed: () {
                             provider.setActiveServer(server.id);
                           },
-                          tooltip: '激活',
+                          tooltip: l10n.activate,
                         ),
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () => _showServerDialog(server: server),
-                        tooltip: '编辑',
+                        tooltip: l10n.edit,
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('确认删除'),
-                              content: Text('确定要删除服务器 "${server.name}" 吗？'),
+                            builder: (ctx) => AlertDialog(
+                              title: Text(l10n.confirmDelete),
+                              content: Text(l10n.confirmDeleteServer(server.name)),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('取消'),
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: Text(l10n.cancel),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
                                     provider.deleteServer(server.id);
-                                    Navigator.pop(context);
+                                    Navigator.pop(ctx);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
                                   ),
-                                  child: const Text('删除'),
+                                  child: Text(l10n.delete),
                                 ),
                               ],
                             ),
                           );
                         },
-                        tooltip: '删除',
+                        tooltip: l10n.delete,
                       ),
                     ],
                   ),

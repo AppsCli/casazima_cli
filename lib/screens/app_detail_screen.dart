@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/app_info.dart';
 import '../providers/app_provider.dart';
 import '../services/api_service.dart';
@@ -52,6 +53,7 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -63,15 +65,15 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
               context.go('/home');
             }
           },
-          tooltip: '返回',
+          tooltip: l10n.back,
         ),
-        title: Text(_appInfo?.name ?? '应用详情'),
+        title: Text(_appInfo?.name ?? l10n.appDetail),
       ),
-      body: _buildBody(context),
+      body: _buildBody(context, l10n),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, AppLocalizations l10n) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -84,14 +86,14 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
-              '错误: $_error',
+              '${l10n.error}: $_error',
               style: const TextStyle(color: Colors.red),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadDetail,
-              child: const Text('重试'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -100,7 +102,7 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
 
     final app = _appInfo;
     if (app == null) {
-      return const Center(child: Text('未找到应用信息'));
+      return Center(child: Text(l10n.appNotFound));
     }
 
     return SingleChildScrollView(
@@ -144,7 +146,7 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
                     const SizedBox(height: 8),
                     if (app.version != null)
                       Text(
-                        '版本：${app.version}',
+                        l10n.versionLabel(app.version!),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
@@ -166,8 +168,8 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
           ),
           const SizedBox(height: 24),
           if (app.description != null && app.description!.isNotEmpty) ...[
-            const Text(
-              '简介',
+            Text(
+              l10n.description,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -180,8 +182,8 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
             ),
             const SizedBox(height: 24),
           ],
-          const Text(
-            '状态',
+          Text(
+            l10n.status,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -211,7 +213,7 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      (app.isRunning ?? false) ? '运行中' : '未运行',
+                      (app.isRunning ?? false) ? l10n.running : l10n.notRunning,
                       style: TextStyle(
                         fontSize: 12,
                         color: (app.isRunning ?? false)
@@ -230,26 +232,24 @@ class _AppDetailScreenState extends State<AppDetailScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // 占位：安装/启动逻辑
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('安装/启动功能待实现（需要对接 /v2/app_management/compose）')),
+                      SnackBar(content: Text(l10n.installStartNotImplemented)),
                     );
                   },
                   icon: const Icon(Icons.play_arrow),
-                  label: const Text('安装 / 启动'),
+                  label: Text(l10n.installStart),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    // 占位：卸载逻辑
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('卸载功能待实现（需要对接 /v2/app_management/compose）')),
+                      SnackBar(content: Text(l10n.uninstallNotImplemented)),
                     );
                   },
                   icon: const Icon(Icons.delete_outline),
-                  label: const Text('卸载'),
+                  label: Text(l10n.uninstall),
                 ),
               ),
             ],

@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../models/system_info.dart';
@@ -685,6 +687,75 @@ class ApiService {
   String getFileDownloadUrl(String path) {
     // Return the download URL for the file (与 CasaOS-UI file.download 一致：/v1/file)
     return '/v1/file?path=$path&timestamp=${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  /// 获取文件流式播放 URL（与 CasaOS-UI getFileUrl 一致：baseUrl/v3/file?path=...&token=...）
+  /// 用于视频/音频流式预览，无需先下载
+  /// 返回 (url, headers)，headers 可用于 video_player/audioplayers 的 httpHeaders
+  Future<({String url, Map<String, String> headers})> getFileStreamingUrl(String path) async {
+    final baseUrl = await getBaseUrl();
+    if (baseUrl == null) throw Exception('No active server configured');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+    if (token == null || token.isEmpty) {
+      throw Exception('Not logged in, cannot get file streaming URL');
+    }
+    final base = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final uri = Uri.parse(base).replace(
+      path: '/v3/file',
+      queryParameters: {'path': path, 'token': token},
+    );
+    final url = uri.toString();
+    // CasaOS API 接受 query 中的 token，部分场景也可用 Authorization header
+    final headers = <String, String>{'Authorization': token};
+    return (url: url, headers: headers);
+  }
+
+  /// 下载文件为字节流（与 CasaOS-UI file.download 一致：GET /v1/file?path=...&timestamp=...）
+  Future<Uint8List> downloadFileAsBytes(String path) async {
+    final response = await _get(
+      '/v1/file',
+      queryParams: {
+        'path': path,
+        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+      },
+    );
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    }
+    _logErrorResponse('downloadFileAsBytes', response);
+    throw Exception('Failed to download file');
+  }
+
+  /// 流式下载文件到临时目录（用于视频预览 fallback，避免大文件占满内存）
+  Future<String> downloadFileToTemp(String path, String fileName) async {
+    final baseUrl = await getBaseUrl();
+    if (baseUrl == null) throw Exception('No active server configured');
+    final uri = Uri.parse('$baseUrl/v1/file').replace(
+      queryParameters: {
+        'path': path,
+        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+      },
+    );
+    final headers = await _getHeaders();
+    final request = http.Request('GET', uri);
+    request.headers.addAll(headers);
+    final client = http.Client();
+    try {
+      final response = await client.send(request);
+      if (response.statusCode != 200) {
+        throw Exception('Download failed: ${response.statusCode}');
+      }
+      final tempDir = await getTemporaryDirectory();
+      final safeName = fileName.replaceAll(RegExp(r'[^\w\-.]'), '_');
+      final file = File('${tempDir.path}/video_preview_$safeName');
+      final sink = file.openWrite();
+      await response.stream.pipe(sink);
+      await sink.close();
+      return file.path;
+    } finally {
+      client.close();
+    }
   }
 
   // App Management APIs (v2)

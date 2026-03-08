@@ -33,7 +33,8 @@ android {
             if (keystorePropertiesFile.exists()) {
                 keyAlias = keystoreProperties["keyAlias"] as String?
                 keyPassword = keystoreProperties["keyPassword"] as String?
-                storeFile = keystoreProperties["storeFile"]?.let { rootProject.`file`(it) }
+                val storeFileRelativePath = keystoreProperties["storeFile"] as String
+                storeFile = rootProject.file(storeFileRelativePath.replace("../", ""))
                 storePassword = keystoreProperties["storePassword"] as String?
             }
         }

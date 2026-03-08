@@ -231,14 +231,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (index == 0) {
                                 return SystemEntryCard(
                                   icon: Icons.store,
-                                  label: 'App Store',
+                                  label: l10n.appStore,
                                   onTap: () => context.push('/app-store'),
                                 );
                               }
                               if (index == 1) {
                                 return SystemEntryCard(
                                   icon: Icons.folder,
-                                  label: 'Files',
+                                  label: l10n.files,
                                   onTap: () => context.push('/files'),
                                 );
                               }
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (legacyApps.isNotEmpty) ...[
                         if (normalApps.isNotEmpty) const SizedBox(height: 24),
                         Text(
-                          '旧应用程序 (待重建)',
+                          l10n.legacyApps,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

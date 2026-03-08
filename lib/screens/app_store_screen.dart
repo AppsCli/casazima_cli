@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../l10n/app_localizations.dart';
 import '../models/store_app_info.dart';
 import '../providers/app_provider.dart';
 import '../services/api_service.dart';
@@ -90,7 +91,7 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
       await _api.installComposeAppYaml(yaml);
       if (mounted) {
         ScaffoldMessenger.of(ctx).showSnackBar(
-          SnackBar(content: Text('${app.title} 安装成功'), backgroundColor: Colors.green),
+          SnackBar(content: Text(AppLocalizations.of(ctx)!.installSuccessWithApp(app.title)), backgroundColor: Colors.green),
         );
         Provider.of<AppProvider>(ctx, listen: false).loadApps();
         _load();
@@ -98,7 +99,7 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(ctx).showSnackBar(
-          SnackBar(content: Text('安装失败: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppLocalizations.of(ctx)!.installFailed(e.toString())), backgroundColor: Colors.red),
         );
       }
     }
@@ -112,17 +113,18 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-          SnackBar(content: Text('获取应用配置失败: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppLocalizations.of(scaffoldContext)!.getAppConfigFailed(e.toString())), backgroundColor: Colors.red),
         );
       }
       return;
     }
     final controller = TextEditingController(text: composeYaml);
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('自定义安装: ${app.title}'),
+        title: Text(l10n.customInstall(app.title)),
         content: SizedBox(
           width: MediaQuery.of(dialogContext).size.width * 0.9,
           height: MediaQuery.of(dialogContext).size.height * 0.6,
@@ -130,10 +132,10 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
             controller: controller,
             maxLines: null,
             expands: true,
-            decoration: const InputDecoration(
-              hintText: '编辑 docker-compose 配置后点击安装',
+            decoration: InputDecoration(
+              hintText: l10n.editComposeHint,
               alignLabelWithHint: true,
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
           ),
@@ -141,7 +143,7 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -150,7 +152,7 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
                 await _api.installComposeAppYaml(controller.text);
                 if (mounted) {
                   ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-                    const SnackBar(content: Text('安装成功'), backgroundColor: Colors.green),
+                    SnackBar(content: Text(AppLocalizations.of(scaffoldContext)!.installSuccess), backgroundColor: Colors.green),
                   );
                   Provider.of<AppProvider>(scaffoldContext, listen: false).loadApps();
                   _load();
@@ -158,12 +160,12 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-                    SnackBar(content: Text('安装失败: $e'), backgroundColor: Colors.red),
+                    SnackBar(content: Text(AppLocalizations.of(scaffoldContext)!.installFailed(e.toString())), backgroundColor: Colors.red),
                   );
                 }
               }
             },
-            child: const Text('安装'),
+            child: Text(l10n.install),
           ),
         ],
       ),
@@ -176,6 +178,7 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -187,9 +190,9 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
               context.go('/home');
             }
           },
-          tooltip: '返回',
+          tooltip: l10n.back,
         ),
-        title: const Text('应用市场'),
+        title: Text(l10n.appStore),
       ),
       body: Column(
         children: [
@@ -201,7 +204,7 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: '搜索应用',
+                      hintText: l10n.searchApps,
                       prefixIcon: const Icon(Icons.search),
                       border: const OutlineInputBorder(),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -212,9 +215,9 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
                 const SizedBox(width: 8),
                 DropdownButton<String>(
                   value: _selectedCategory,
-                  hint: const Text('分类'),
+                  hint: Text(l10n.category),
                   items: [
-                    const DropdownMenuItem(value: null, child: Text('全部分类')),
+                    DropdownMenuItem(value: null, child: Text(l10n.allCategories)),
                     ..._categories.map((c) {
                       final name = c['name'] as String? ?? '';
                       return DropdownMenuItem<String>(
@@ -232,14 +235,15 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
             ),
           ),
           Expanded(
-            child: _buildBody(),
+            child: _buildBody(context),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -250,9 +254,9 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('错误: $_error', style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+            Text('${l10n.error}: $_error', style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _load, child: const Text('重试')),
+            ElevatedButton(onPressed: _load, child: Text(l10n.retry)),
           ],
         ),
       );
@@ -266,7 +270,7 @@ class _AppStoreScreenState extends State<AppStoreScreen> {
             Icon(Icons.apps, size: 64, color: Colors.grey.shade400),
             const SizedBox(height: 16),
             Text(
-              _searchQuery.isNotEmpty ? '未找到匹配的应用' : '暂无应用',
+              _searchQuery.isNotEmpty ? l10n.noAppsFound : l10n.noApps,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
             ),
           ],
@@ -363,7 +367,7 @@ class _StoreAppCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '已安装',
+                      AppLocalizations.of(context)!.installed,
                       style: TextStyle(fontSize: 10, color: Colors.green.shade800),
                     ),
                   ),
@@ -377,12 +381,12 @@ class _StoreAppCard extends StatelessWidget {
                       ElevatedButton(
                         onPressed: onInstall,
                         style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12)),
-                        child: const Text('安装'),
+                        child: Text(AppLocalizations.of(context)!.install),
                       ),
                       const SizedBox(width: 4),
                       TextButton(
                         onPressed: onCustomInstall,
-                        child: const Text('自定义'),
+                        child: Text(AppLocalizations.of(context)!.custom),
                       ),
                     ],
                   ),

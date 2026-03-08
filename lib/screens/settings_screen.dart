@@ -55,7 +55,7 @@ class SettingsScreen extends StatelessWidget {
               context.go('/home');
             }
           },
-          tooltip: '返回',
+          tooltip: l10n.back,
         ),
         title: Text(l10n.settings),
       ),

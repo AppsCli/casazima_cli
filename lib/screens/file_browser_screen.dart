@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/file_provider.dart';
 import '../models/file_item.dart';
+import '../widgets/file_viewer_dialog.dart';
+import '../widgets/video_viewer_dialog.dart';
+import '../widgets/audio_viewer_dialog.dart';
+import '../widgets/pdf_viewer_dialog.dart';
 
 class FileBrowserScreen extends StatefulWidget {
   final String? initialPath;
@@ -25,14 +30,15 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
 
   void _showCreateDialog({required bool isFolder}) {
     final controller = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(isFolder ? '新建文件夹' : '新建文件'),
+        title: Text(isFolder ? l10n.newFolder : l10n.newFile),
         content: TextField(
           controller: controller,
           decoration: InputDecoration(
-            labelText: isFolder ? '文件夹名称' : '文件名称',
+            labelText: isFolder ? l10n.folderName : l10n.fileName,
             border: const OutlineInputBorder(),
           ),
           autofocus: true,
@@ -40,7 +46,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -54,18 +60,20 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                     await provider.createFile(controller.text);
                   }
                   if (mounted) {
+                    final l = AppLocalizations.of(context)!;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('${isFolder ? '文件夹' : '文件'}创建成功'),
+                        content: Text(isFolder ? l.folderCreated : l.fileCreated),
                         backgroundColor: Colors.green,
                       ),
                     );
                   }
                 } catch (e) {
                   if (mounted) {
+                    final l = AppLocalizations.of(context)!;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('创建失败: $e'),
+                        content: Text(l.createFailed(e.toString())),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -73,7 +81,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                 }
               }
             },
-            child: const Text('创建'),
+            child: Text(l10n.create),
           ),
         ],
       ),
@@ -82,22 +90,23 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
 
   void _showRenameDialog(FileItem item) {
     final controller = TextEditingController(text: item.name);
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('重命名${item.isDir ? '文件夹' : '文件'}'),
+        title: Text(item.isDir ? l10n.renameFolder : l10n.renameFile),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: '新名称',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.newName,
+            border: const OutlineInputBorder(),
           ),
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -108,8 +117,8 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                   await provider.renameItem(item, controller.text);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('重命名成功'),
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context)!.renameSuccess),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -118,7 +127,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('重命名失败: $e'),
+                        content: Text(AppLocalizations.of(context)!.renameFailed(e.toString())),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -126,23 +135,185 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                 }
               }
             },
-            child: const Text('确定'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
     );
   }
 
+  Future<void> _openFile(FileItem item, FileProvider provider) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (item.isDir) return;
+
+    if (isPreviewableTextFile(item)) {
+      try {
+        final content = await provider.getFileContent(item.path);
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (ctx) => FileViewerDialog(
+            item: item,
+            textContent: content,
+            onDownload: () {
+              Navigator.pop(ctx);
+              _doDownload(item, provider);
+            },
+          ),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.openFailed(e.toString())), backgroundColor: Colors.red),
+          );
+        }
+      }
+      return;
+    }
+
+    if (isPreviewableImageFile(item)) {
+      try {
+        final bytes = await provider.downloadFileAsBytes(item.path);
+        if (!mounted) return;
+        final isSvg = item.name.toLowerCase().endsWith('.svg');
+        showDialog(
+          context: context,
+          builder: (ctx) => FileViewerDialog(
+            item: item,
+            imageBytes: bytes,
+            isSvg: isSvg,
+            onDownload: () {
+              Navigator.pop(ctx);
+              _doDownload(item, provider);
+            },
+          ),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.openFailed(e.toString())), backgroundColor: Colors.red),
+          );
+        }
+      }
+      return;
+    }
+
+    if (isPreviewableVideoFile(item) || isPreviewableAudioFile(item)) {
+      try {
+        final streaming = await provider.getFileStreamingUrl(item.path);
+        if (!mounted) return;
+        debugPrint('[视频/音频预览] URL: ${streaming.url}');
+        if (isPreviewableVideoFile(item)) {
+          showDialog(
+            context: context,
+            builder: (ctx) => VideoViewerDialog(
+              item: item,
+              streamingUrl: streaming.url,
+              httpHeaders: streaming.headers,
+              onDownload: () {
+                Navigator.pop(ctx);
+                _doDownload(item, provider);
+              },
+              onDownloadAndPlay: () async {
+                try {
+                  return await provider.downloadVideoToTemp(item.path, item.name);
+                } catch (e) {
+                  debugPrint('[视频预览] 下载失败: $e');
+                  return null;
+                }
+              },
+            ),
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (ctx) => AudioViewerDialog(
+              item: item,
+              streamingUrl: streaming.url,
+              httpHeaders: streaming.headers,
+              onDownload: () {
+                Navigator.pop(ctx);
+                _doDownload(item, provider);
+              },
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.openFailed(e.toString())), backgroundColor: Colors.red),
+          );
+        }
+      }
+      return;
+    }
+
+    if (isPreviewablePdfFile(item)) {
+      try {
+        final bytes = await provider.downloadFileAsBytes(item.path);
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (ctx) => PdfViewerDialog(
+            item: item,
+            bytes: bytes,
+            onDownload: () {
+              Navigator.pop(ctx);
+              _doDownload(item, provider);
+            },
+          ),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.openFailed(e.toString())), backgroundColor: Colors.red),
+          );
+        }
+      }
+      return;
+    }
+
+    // 不可预览的文件：直接下载
+    _doDownload(item, provider);
+  }
+
+  Future<void> _doDownload(FileItem item, FileProvider provider) async {
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.downloadPreparing)),
+    );
+    try {
+      final path = await provider.downloadFile(item);
+      if (!mounted) return;
+      if (path != null && path.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.downloadSuccess), backgroundColor: Colors.green),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.downloadCancelled)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.operationFailed(e.toString())), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   void _showDeleteDialog(FileItem item) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('删除${item.isDir ? '文件夹' : '文件'}'),
-        content: Text('确定要删除 "${item.name}" 吗？此操作不可撤销。'),
+        title: Text(item.isDir ? l10n.deleteFolder : l10n.deleteFile),
+        content: Text(l10n.deleteConfirm(item.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -152,8 +323,8 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                 await provider.deleteItem(item);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('删除成功'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.deleteSuccess),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -162,7 +333,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('删除失败: $e'),
+                      content: Text(AppLocalizations.of(context)!.deleteFailed(e.toString())),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -170,7 +341,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('删除'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -187,6 +358,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<FileProvider>(
       builder: (context, provider, _) {
         return PopScope(
@@ -201,14 +373,14 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: _goToPreviousPage,
-          tooltip: '返回上一页',
+          tooltip: l10n.back,
         ),
         title: Consumer<FileProvider>(
           builder: (context, provider, child) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('文件管理'),
+                Text(l10n.files),
                 Text(
                   provider.currentPath,
                   style: const TextStyle(fontSize: 12),
@@ -222,14 +394,14 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             IconButton(
               icon: const Icon(Icons.subdirectory_arrow_left),
               onPressed: () => provider.navigateUp(),
-              tooltip: '上级目录',
+              tooltip: l10n.parentDirectory,
             ),
           Consumer<FileProvider>(
             builder: (context, provider, child) {
               return IconButton(
                 icon: Icon(provider.isGridView ? Icons.view_list : Icons.grid_view),
                 onPressed: () => provider.toggleView(),
-                tooltip: provider.isGridView ? '列表视图' : '网格视图',
+                tooltip: provider.isGridView ? l10n.listView : l10n.gridView,
               );
             },
           ),
@@ -238,27 +410,27 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             onPressed: () {
               Provider.of<FileProvider>(context, listen: false).refresh();
             },
-            tooltip: '刷新',
+            tooltip: l10n.refresh,
           ),
           PopupMenuButton(
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'folder',
                 child: Row(
                   children: [
-                    Icon(Icons.folder, size: 20),
-                    SizedBox(width: 8),
-                    Text('新建文件夹'),
+                    const Icon(Icons.folder, size: 20),
+                    const SizedBox(width: 8),
+                    Text(l10n.newFolder),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'file',
                 child: Row(
                   children: [
-                    Icon(Icons.insert_drive_file, size: 20),
-                    SizedBox(width: 8),
-                    Text('新建文件'),
+                    const Icon(Icons.insert_drive_file, size: 20),
+                    const SizedBox(width: 8),
+                    Text(l10n.newFile),
                   ],
                 ),
               ),
@@ -283,14 +455,14 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                   const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
-                    '错误: ${provider.error}',
+                    '${l10n.error}: ${provider.error}',
                     style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => provider.refresh(),
-                    child: const Text('重试'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -304,9 +476,9 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                 children: [
                   const Icon(Icons.folder_open, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
-                  const Text(
-                    '文件夹为空',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  Text(
+                    l10n.folderEmpty,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
               ),
@@ -415,10 +587,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
                 if (item.isDir) {
                   provider.navigateTo(item.path);
                 } else {
-                  // TODO: Open file viewer
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('打开文件: ${item.name}')),
-                  );
+                  _openFile(item, provider);
                 }
               },
               onLongPress: () {
@@ -444,7 +613,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
           ),
           title: Text(item.name),
           subtitle: Text(
-            item.isDir ? '文件夹' : item.formattedSize,
+            item.isDir ? AppLocalizations.of(context)!.folder : item.formattedSize,
           ),
           trailing: item.date != null
               ? Text(
@@ -456,10 +625,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             if (item.isDir) {
               provider.navigateTo(item.path);
             } else {
-              // TODO: Open file viewer
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('打开文件: ${item.name}')),
-              );
+              _openFile(item, provider);
             }
           },
           onLongPress: () {
@@ -479,7 +645,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.drive_file_rename_outline),
-              title: const Text('重命名'),
+              title: Text(AppLocalizations.of(context)!.rename),
               onTap: () {
                 Navigator.pop(context);
                 _showRenameDialog(item);
@@ -487,7 +653,7 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('删除', style: TextStyle(color: Colors.red)),
+              title: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
                 _showDeleteDialog(item);
@@ -496,13 +662,10 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
             if (!item.isDir)
               ListTile(
                 leading: const Icon(Icons.download),
-                title: const Text('下载'),
+                title: Text(AppLocalizations.of(context)!.download),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Implement download
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('下载功能待实现')),
-                  );
+                  _doDownload(item, provider);
                 },
               ),
           ],
