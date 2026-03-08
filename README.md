@@ -1,131 +1,151 @@
-# casazima_cli
+# CasaZima CLI
 
-一个基于 Flutter 实现的 **CasaOS / ZimaOS 多服务器客户端**。
+English | [简体中文](README_zh.md)
 
-本项目在本地集成了官方前端 `CasaOS-UI/` 代码，用于参考交互与接口设计，但真正运行的是 `lib/` 下的 Flutter 客户端：
+A **multi-server client for CasaOS / ZimaOS** built with Flutter, supporting Android, iOS, macOS, Windows, Linux, and Web.
 
-- 支持配置多个 CasaOS / ZimaOS 服务器，并选择其一作为当前激活服务器
-- 支持系统初始化引导（复刻 `Welcome.vue` 逻辑）
-- 支持登录 / 退出登录（复刻 `Login.vue` 逻辑）
-- 支持首页系统状态展示（CPU、内存、磁盘、网络）与应用列表
-- 支持基础文件管理（浏览 / 新建 / 重命名 / 删除 文件与文件夹）
-- 预留 App 详情 / 安装 / 卸载 的入口，后续可继续对接 CasaOS 的 OpenAPI
+This project integrates the official frontend `CasaOS-UI/` code locally for reference on interaction and API design, while the actual runtime is the Flutter client under `lib/`:
 
----
-
-## 功能概览
-
-- **多服务器管理**
-  - 在 APP 中配置多个 CasaOS / ZimaOS 服务器（IP / 域名 + 端口 + 是否 HTTPS）
-  - 可设置一个服务器为“激活服务器”，所有 API 请求都会发往该服务器
-
-- **初始化引导（Welcome）**
-  - 首次启动且服务器未初始化时，自动进入欢迎向导
-  - 引导用户创建初始账号（使用 `/users/status` + `/users/register` + `initKey`）
-  - 注册成功后自动登录，并设置默认 App 顺序（与 CasaOS 保持一致）
-
-- **登录与账号状态**
-  - 登录：`/users/login`
-  - 使用 `SharedPreferences` 持久化 `access_token / refresh_token / user`
-  - 已登录用户可直接进入首页
-
-- **首页（Home）**
-  - 显示当前服务器：
-    - 系统版本 `/sys/version`
-    - 硬件信息 `/sys/hardware`
-    - CPU / 内存 / 磁盘 / 网络等状态
-  - 显示应用列表 `/v2/app_management/apps`
-
-- **文件管理**
-  - 目录列表：`/folder`
-  - 新建 / 重命名 / 删除 文件和文件夹：`/folder` + `/file`
-  - 网格 / 列表视图切换
-  - 面包屑导航、上一级目录、空目录提示等
-
-- **App 详情（基础版）**
-  - 通过 `/v2/app_management/apps/{id}` 拉取应用详情
-  - 展示名称 / 图标 / 版本 / 分类 / 描述 / 运行状态
-  - 提供“安装 / 启动”和“卸载”按钮，目前为安全起见只做**提示占位**，未真正发起安装 / 卸载请求
+- Configure multiple CasaOS / ZimaOS servers and select one as the active server
+- System initialization wizard (replicating `Welcome.vue` logic)
+- Login / logout (replicating `Login.vue` logic)
+- Home dashboard with system status (CPU, memory, disk, network) and app list
+- Basic file management (browse / create / rename / delete files and folders)
+- File preview (text, images, audio/video, PDF, etc.)
+- Multi-language support (Chinese, English, Japanese, Korean, German, French, Spanish, Russian, Arabic, Italian, Traditional Chinese)
+- App detail / install / uninstall entry points reserved for future CasaOS OpenAPI integration
 
 ---
 
-## 目录结构（核心部分）
+## Download & Release
 
-仅列出与 Flutter 客户端相关的核心目录：
+| Platform | Format | Description |
+|----------|--------|--------------|
+| **Android** | APK / AAB | For phones and tablets |
+| **iOS** | IPA | Requires signing for installation |
+| **macOS** | DMG | Drag-and-drop install |
+| **Windows** | MSIX / Setup.exe | MSIX for Microsoft Store; Setup.exe is Inno Setup installer |
+| **Linux** | deb / rpm / AppImage / Flatpak / tar.gz | deb/rpm for major distros; AppImage portable; Flatpak sandbox; tar.gz portable archive |
+
+Release builds are available from [GitHub Releases](https://github.com/iotserv/casazima_cli/releases). Pushing a `v*.*.*` tag triggers automatic builds.
+
+---
+
+## Features Overview
+
+- **Multi-Server Management**
+  - Configure multiple CasaOS / ZimaOS servers (IP / domain + port + HTTPS option)
+  - Set one server as the "active server"; all API requests go to that server
+
+- **Initialization Wizard (Welcome)**
+  - On first launch with uninitialized server, enter the welcome wizard
+  - Guide users to create the initial account (using `/users/status` + `/users/register` + `initKey`)
+  - Auto-login after registration and set default app order (aligned with CasaOS)
+
+- **Login & Account Status**
+  - Login: `/users/login`
+  - Persist `access_token / refresh_token / user` via `SharedPreferences`
+  - Logged-in users go directly to the home screen
+
+- **Home**
+  - Current server info:
+    - System version `/sys/version`
+    - Hardware info `/sys/hardware`
+    - CPU / memory / disk / network status
+  - App list from `/v2/app_management/apps`
+
+- **File Management**
+  - Directory listing: `/folder`
+  - Create / rename / delete files and folders: `/folder` + `/file`
+  - Grid / list view toggle
+  - Breadcrumb navigation, parent directory, empty directory hints
+  - File preview: text, images, audio/video, PDF, etc.
+
+- **App Detail (Basic)**
+  - Fetch app details via `/v2/app_management/apps/{id}`
+  - Display name / icon / version / category / description / run status
+  - "Install / Start" and "Uninstall" buttons are placeholders for safety; no actual install/uninstall requests yet
+
+---
+
+## Directory Structure (Core)
+
+Only core directories related to the Flutter client:
 
 - `lib/main.dart`  
-  应用入口，配置 `MultiProvider` 和 `GoRouter`。
+  App entry, configures `MultiProvider` and `GoRouter`.
 
 - `lib/router/app_router.dart`  
-  路由配置：
-  - `/login`：登录页
-  - `/welcome`：初始化向导
-  - `/home`：首页
-  - `/server-config`：服务器配置
-  - `/files`：文件管理器
-  - `/apps/:id`：应用详情页
+  Route configuration:
+  - `/login`: Login page
+  - `/welcome`: Initialization wizard
+  - `/home`: Home
+  - `/server-config`: Server configuration
+  - `/files`: File manager
+  - `/apps/:id`: App detail page
 
 - `lib/models/`
-  - `server_config.dart`：服务器配置模型
-  - `user.dart`：用户与登录返回模型
-  - `system_info.dart`：系统版本 / 硬件信息模型
-  - `app_info.dart`：应用信息模型
-  - `file_item.dart`：文件/目录信息模型
+  - `server_config.dart`: Server config model
+  - `user.dart`: User and login response model
+  - `system_info.dart`: System version / hardware info model
+  - `app_info.dart`: App info model
+  - `file_item.dart`: File/directory info model
 
 - `lib/services/`
-  - `api_service.dart`：对 CasaOS / ZimaOS HTTP API 的封装
-  - `server_config_service.dart`：服务器配置本地存储封装
+  - `api_service.dart`: HTTP API wrapper for CasaOS / ZimaOS
+  - `server_config_service.dart`: Local storage for server config
 
 - `lib/providers/`
-  - `auth_provider.dart`：登录状态 / 用户信息
-  - `server_config_provider.dart`：服务器列表 / 激活服务器
-  - `system_info_provider.dart`：系统信息
-  - `app_provider.dart`：应用列表
-  - `file_provider.dart`：文件管理状态
+  - `auth_provider.dart`: Login state / user info
+  - `server_config_provider.dart`: Server list / active server
+  - `system_info_provider.dart`: System info
+  - `app_provider.dart`: App list
+  - `file_provider.dart`: File management state
 
 - `lib/screens/`
-  - `login_screen.dart`：登录界面
-  - `welcome_screen.dart`：初始化引导界面
-  - `home_screen.dart`：首页（系统状态 + 应用列表）
-  - `server_config_screen.dart`：服务器配置界面
-  - `file_browser_screen.dart`：文件浏览与管理界面
-  - `app_detail_screen.dart`：应用详情界面
+  - `login_screen.dart`: Login UI
+  - `welcome_screen.dart`: Initialization wizard UI
+  - `home_screen.dart`: Home (system status + app list)
+  - `server_config_screen.dart`: Server configuration UI
+  - `file_browser_screen.dart`: File browser and management UI
+  - `app_detail_screen.dart`: App detail UI
 
 - `lib/widgets/`
-  - `system_status_card.dart`：系统状态卡片（CPU / 内存 / 磁盘 / 网络）
-  - `app_grid.dart`：应用网格列表
+  - `system_status_card.dart`: System status card (CPU / memory / disk / network)
+  - `app_grid.dart`: App grid list
 
-CasaOS 官方前端代码位于：
+Official CasaOS frontend code:
 
-- `CasaOS-UI/`：原始 Vue 前端工程，仅作为参考，不参与 Flutter 构建。
+- `CasaOS-UI/`: Original Vue frontend project, for reference only, not part of Flutter build.
 
 ---
 
-## 环境要求
+## Requirements
 
-- Flutter SDK：3.8.1 及以上（见 `pubspec.yaml` 中 `sdk: ^3.8.1`）
-- Dart SDK：随 Flutter 安装
-- 开发平台：
-  - macOS（已包含 iOS / macOS 构建工程）
-  - Windows / Linux（已包含对应 Flutter Runner）
+- Flutter SDK: 3.8.1 or higher (CI uses 3.32.8; see `pubspec.yaml` `sdk: ^3.8.1`)
+- Dart SDK: Bundled with Flutter
+- Development platforms:
+  - macOS (includes iOS / macOS build)
+  - Windows / Linux (includes corresponding Flutter Runner)
+  - Web (Chrome, etc.)
 
-### Linux 构建额外依赖
+### Linux Build Dependencies
 
-编译 Linux 版本时，`audioplayers` 插件需要 GStreamer 开发库。若出现 `gstreamer-1.0 not found` 错误，请先安装：
+For Linux builds, the `audioplayers` plugin requires GStreamer. If you see `gstreamer-1.0 not found`, install:
 
-**Ubuntu / Debian：**
+**Ubuntu / Debian:**
 
 ```bash
 sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 ```
 
-**Fedora：**
+**Fedora:**
 
 ```bash
 sudo dnf install gstreamer1-devel gstreamer1-plugins-base-devel
 ```
 
-**Arch Linux：**
+**Arch Linux:**
 
 ```bash
 sudo pacman -S gstreamer gst-plugins-base
@@ -133,23 +153,22 @@ sudo pacman -S gstreamer gst-plugins-base
 
 ---
 
-## 安装与运行
+## Installation & Run
 
-### 1. 安装依赖
+### 1. Install Dependencies
 
 ```bash
 cd casazima_cli
 flutter pub get
 ```
 
-### 2. 运行到设备 / 模拟器
+### 2. Run on Device / Emulator
 
 ```bash
-# 运行到已连接的设备或启动的模拟器
 flutter run
 ```
 
-如需指定平台：
+To specify a platform:
 
 ```bash
 flutter run -d macos
@@ -160,110 +179,113 @@ flutter run -d android
 
 ---
 
-## 使用说明
+## Usage
 
-### 1. 配置 CasaOS / ZimaOS 服务器
+### 1. Configure CasaOS / ZimaOS Server
 
-1. 启动 APP 后，如果尚未配置服务器：
-   - 登录页顶部会提示“配置服务器”按钮
-2. 进入「服务器配置」：
-   - 填写：
-     - 服务器名称（任意标识）
-     - 主机地址（IP 或域名，如 `192.168.1.100`、`casaos.local`）
-     - 端口（默认 80 或 443，视你的部署而定）
-     - 是否使用 HTTPS
-   - 保存后，可在列表中点“勾选”按钮设置为**激活服务器**
+1. After launching the app, if no server is configured:
+   - The login page shows a "Configure server" button at the top
+2. Go to **Server Config**:
+   - Fill in:
+     - Server name (any label)
+     - Host (IP or domain, e.g. `192.168.1.100`, `casaos.local`)
+     - Port (default 80 or 443, depending on your setup)
+     - Use HTTPS
+   - After saving, tap the checkmark in the list to set it as the **active server**
 
-> 只有存在一个激活服务器时，登录与其它 API 才能正常工作。
+> Login and other APIs only work when there is an active server.
 
-### 2. 初始化服务器（Welcome 流程）
+### 2. Initialize Server (Welcome Flow)
 
-若你的 CasaOS / ZimaOS 实例尚未完成初始化（与 Web UI 首次打开的流程一致）：
+If your CasaOS / ZimaOS instance is not yet initialized (same as first-time Web UI):
 
-1. APP 会在登录页自动调用 `/users/status` 判断是否需要初始化
-2. 若需要，将自动跳转到 `/welcome`：
-   - 步骤 1：欢迎页
-   - 步骤 2：创建账户（填用户名与两次密码）
-   - 步骤 3：完成页（自动登录并设置默认 app 顺序）
-3. 完成后进入首页。
+1. The app calls `/users/status` on the login page to check if initialization is needed
+2. If needed, it redirects to `/welcome`:
+   - Step 1: Welcome page
+   - Step 2: Create account (username and password twice)
+   - Step 3: Done (auto-login and set default app order)
+3. Then you are taken to the home screen.
 
-### 3. 登录 / 退出登录
+### 3. Login / Logout
 
-- 登录：
-  - 在登录页输入用户名 / 密码
-  - 点击“登录”按钮
-  - 成功后跳转到 `/home`
-- 退出登录：
-  - 在首页右上角头像菜单中选择“退出登录”
-  - 将清除本地 token 与用户信息，并返回登录页
+- **Login**: Enter username and password on the login page, tap "Login", then go to `/home`
+- **Logout**: From the avatar menu (top-right on home), choose "Log out". Local tokens and user info are cleared and you return to the login page.
 
-### 4. 首页（系统状态 + 应用）
+### 4. Home (System Status + Apps)
 
-- 顶部卡片展示：
-  - CasaOS / ZimaOS 当前版本
-  - CPU 使用率
-  - 内存占用
-  - 磁盘容量与使用情况
-  - 网络上/下载速率
-- 下方 App 区域：
-  - 展示来自 `/v2/app_management/apps` 的应用列表
-  - 点击某个 App 卡片 → 进入应用详情页（信息展示已实现，安装/卸载为占位）
+- Top cards show:
+  - CasaOS / ZimaOS version
+  - CPU usage
+  - Memory usage
+  - Disk capacity and usage
+  - Network upload/download speed
+- App area below:
+  - App list from `/v2/app_management/apps`
+  - Tap an app card → App detail page (info shown; install/uninstall are placeholders)
 
-### 5. 文件管理
+### 5. File Management
 
-从首页 AppBar 点击“文件管理”按钮进入：
+Enter from the "File Management" button in the home AppBar:
 
-- 网格 / 列表双视图切换
-- 支持：
-  - 浏览目录（默认根路径 `/DATA`，可自定义）
-  - 点击文件夹进入下一级目录
-  - 面包屑导航跳转任意上级目录
-  - 新建文件夹 / 文件
-  - 重命名文件 / 文件夹
-  - 删除文件 / 文件夹
+- Grid / list view toggle
+- Browse directories (default root `/DATA`, configurable)
+- Tap folders to go deeper
+- Breadcrumb navigation to any parent directory
+- Create folder / file
+- Rename file / folder
+- Delete file / folder
 
-> 下载与文件内容预览目前保留入口，具体行为可根据你的需求后续对接。
+> File preview supports text, images, audio/video, PDF, etc. Download can be added later as needed.
 
 ---
 
-## 与 CasaOS-UI 的对应关系
+## Mapping to CasaOS-UI
 
-为方便后续继续“复刻”官方前端，这里给出主要映射关系：
+For easier continuation of the official frontend replication:
 
-- 初始化 & 登录：
+- Initialization & login:
   - `CasaOS-UI/src/views/Welcome.vue` → `lib/screens/welcome_screen.dart`
   - `CasaOS-UI/src/views/Login.vue` → `lib/screens/login_screen.dart`
-  - `CasaOS-UI/src/router/index.js` 中的 `beforeEach` → `lib/router/app_router.dart` 中 `redirect` 逻辑
+  - `beforeEach` in `CasaOS-UI/src/router/index.js` → `redirect` logic in `lib/router/app_router.dart`
 
-- 首页：
+- Home:
   - `CasaOS-UI/src/views/Home.vue` → `lib/screens/home_screen.dart`
-  - `CasaOS-UI/src/widgets/Cpu.vue` 等 → `lib/widgets/system_status_card.dart`
+  - `CasaOS-UI/src/widgets/Cpu.vue` etc. → `lib/widgets/system_status_card.dart`
 
-- 文件管理：
+- File management:
   - `CasaOS-UI/src/components/filebrowser/FilePanel.vue` → `lib/screens/file_browser_screen.dart` + `lib/providers/file_provider.dart`
-  - `CasaOS-UI/src/service/folder.js` / `file.js` → `lib/services/api_service.dart` 中对应方法
+  - `CasaOS-UI/src/service/folder.js` / `file.js` → corresponding methods in `lib/services/api_service.dart`
 
-- 应用：
+- Apps:
   - `CasaOS-UI/src/components/Apps/*` → `lib/widgets/app_grid.dart` + `lib/screens/app_detail_screen.dart`
-  - `CasaOS-UI/src/service/apps.js` / `container.js` → `lib/services/api_service.dart` 中 Apps 相关方法（部分已实现，安装/卸载待后续补全）
+  - `CasaOS-UI/src/service/apps.js` / `container.js` → Apps-related methods in `lib/services/api_service.dart` (partially implemented; install/uninstall pending)
 
 ---
 
-## 后续规划（可选）
+## CI/CD
 
-如需进一步完全复刻 CasaOS-UI，可继续在本项目基础上扩展：
+The project uses GitHub Actions for CI and release:
 
-- App 安装 / 卸载 / 启停（对接 `/v2/app_management/compose` + `container` OpenAPI）
-- WebSocket 消息总线接入（`/v2/message_bus/socket.io/`），用于：
-  - App 安装进度
-  - 系统事件 / 通知
-  - 实时状态刷新
-- 文件预览（文本编辑 / 图片 / 音视频 / PDF / Office 文档等）
+- **Test workflow** (`.github/workflows/test.yml`): Runs on push and PR to `master` / `main`, builds all platforms and uploads artifacts
+- **Release workflow** (`.github/workflows/release.yml`): Triggered by `v*.*.*` tags, builds release packages for all platforms and uploads to GitHub Releases
 
 ---
 
-## 许可证
+## Future Plans (Optional)
 
-本项目本身未显式声明许可证（请根据实际情况补充）。  
-CasaOS-UI 部分代码版权归 IceWhale / CasaOS 官方所有，使用和分发时请遵循其原始仓库的 LICENSE 要求。
+To further replicate CasaOS-UI:
 
+- App install / uninstall / start-stop (integrate `/v2/app_management/compose` + `container` OpenAPI)
+- WebSocket message bus (`/v2/message_bus/socket.io/`) for:
+  - App install progress
+  - System events / notifications
+  - Real-time status updates
+- Enhanced file preview (text editing / Office documents, etc.)
+
+---
+
+## License
+
+This project does not explicitly declare a license (please add as appropriate).  
+CasaOS-UI code is copyrighted by IceWhale / CasaOS; follow its original repository LICENSE for use and distribution.  
+`build-flutter-app.sh` is licensed under MIT.
