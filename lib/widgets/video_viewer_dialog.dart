@@ -29,10 +29,21 @@ class VideoViewerDialog extends StatefulWidget {
   State<VideoViewerDialog> createState() => _VideoViewerDialogState();
 }
 
+String _formatDuration(Duration d) {
+  final hours = d.inHours;
+  final minutes = d.inMinutes.remainder(60);
+  final seconds = d.inSeconds.remainder(60);
+  if (hours > 0) {
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+  return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+}
+
 class _VideoViewerDialogState extends State<VideoViewerDialog> {
   late VideoPlayerController _controller;
   String? _error;
   bool _isDownloading = false;
+  bool _isSeeking = false;
 
   void _initFromNetwork() {
     _controller = VideoPlayerController.networkUrl(
@@ -99,10 +110,16 @@ class _VideoViewerDialogState extends State<VideoViewerDialog> {
   void initState() {
     super.initState();
     _initFromNetwork();
+    _controller.addListener(_onControllerUpdate);
+  }
+
+  void _onControllerUpdate() {
+    if (mounted && !_isSeeking) setState(() {});
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_onControllerUpdate);
     _controller.dispose();
     super.dispose();
   }
@@ -232,7 +249,113 @@ class _VideoViewerDialogState extends State<VideoViewerDialog> {
               },
             ),
           ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _VideoControls(
+              controller: _controller,
+              isSeeking: _isSeeking,
+              onSeekingChanged: (v) => setState(() => _isSeeking = v),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+/// 视频播放控制栏：进度条、播放/暂停、快进/快退
+class _VideoControls extends StatelessWidget {
+  final VideoPlayerController controller;
+  final bool isSeeking;
+  final ValueChanged<bool> onSeekingChanged;
+  final bool isDark;
+
+  const _VideoControls({
+    required this.controller,
+    required this.isSeeking,
+    required this.onSeekingChanged,
+    this.isDark = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final position = controller.value.position;
+    final duration = controller.value.duration;
+    final hasDuration = duration.inMilliseconds > 0 && duration.inMilliseconds.isFinite;
+    final progress = hasDuration ? position.inMilliseconds / duration.inMilliseconds : 0.0;
+    final color = isDark ? Colors.white : Colors.white70;
+
+    return Material(
+      color: Colors.black54,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                trackHeight: 2,
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+                activeTrackColor: color,
+                inactiveTrackColor: color.withValues(alpha: 0.3),
+                thumbColor: color,
+              ),
+              child: Slider(
+                value: progress.clamp(0.0, 1.0),
+                onChanged: hasDuration
+                    ? (v) {
+                        onSeekingChanged(true);
+                        controller
+                            .seekTo(Duration(
+                                milliseconds: (duration.inMilliseconds * v).round()))
+                            .whenComplete(() => onSeekingChanged(false));
+                      }
+                    : null,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.replay_10, color: color),
+                  onPressed: () {
+                    final target = position - const Duration(seconds: 10);
+                    controller.seekTo(target.isNegative ? Duration.zero : target);
+                  },
+                  tooltip: '-10s',
+                ),
+                IconButton(
+                  icon: Icon(
+                    controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                    color: color,
+                  ),
+                  onPressed: () {
+                    controller.value.isPlaying ? controller.pause() : controller.play();
+                  },
+                  tooltip: controller.value.isPlaying ? 'Pause' : 'Play',
+                ),
+                IconButton(
+                  icon: Icon(Icons.forward_10, color: color),
+                  onPressed: () {
+                    final target = position + const Duration(seconds: 10);
+                    controller.seekTo(target < duration ? target : duration);
+                  },
+                  tooltip: '+10s',
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${_formatDuration(position)} / ${hasDuration ? _formatDuration(duration) : "--:--"}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: color,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -259,6 +382,11 @@ class _VideoViewerFullscreen extends StatefulWidget {
 class _VideoViewerFullscreenState extends State<_VideoViewerFullscreen> {
   late VideoPlayerController _controller;
   String? _error;
+  bool _isSeeking = false;
+
+  void _onControllerUpdate() {
+    if (mounted && !_isSeeking) setState(() {});
+  }
 
   @override
   void initState() {
@@ -270,6 +398,7 @@ class _VideoViewerFullscreenState extends State<_VideoViewerFullscreen> {
     )
       ..initialize().then((_) {
         if (mounted) {
+          _controller.addListener(_onControllerUpdate);
           setState(() {});
           _controller.play();
         }
@@ -280,6 +409,7 @@ class _VideoViewerFullscreenState extends State<_VideoViewerFullscreen> {
 
   @override
   void dispose() {
+    _controller.removeListener(_onControllerUpdate);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _controller.dispose();
     super.dispose();
@@ -309,9 +439,25 @@ class _VideoViewerFullscreenState extends State<_VideoViewerFullscreen> {
             )
           else if (_controller.value.isInitialized)
             Center(
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: _VideoControls(
+                      controller: _controller,
+                      isSeeking: _isSeeking,
+                      onSeekingChanged: (v) => setState(() => _isSeeking = v),
+                      isDark: true,
+                    ),
+                  ),
+                ],
               ),
             )
           else
@@ -335,20 +481,6 @@ class _VideoViewerFullscreenState extends State<_VideoViewerFullscreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (_controller.value.isInitialized)
-                    IconButton(
-                      icon: Icon(
-                        _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _controller.value.isPlaying
-                              ? _controller.pause()
-                              : _controller.play();
-                        });
-                      },
-                    ),
                   if (widget.onDownload != null)
                     IconButton(
                       icon: const Icon(Icons.download, color: Colors.white),
