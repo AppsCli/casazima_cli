@@ -51,6 +51,15 @@ jobs:
         with:
           files: |
             ./build/app/outputs/bundle/release/app-release.aab
+      - name: Upload AAB to Google Play (Internal Track)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: cloud.iothub.casazima_cli
+          releaseFiles: ./build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
 
   ios:
     name: iOS
@@ -76,6 +85,15 @@ jobs:
         with:
           files: |
             ios-release.zip
+      # 需配置签名并去掉 --no-codesign 后，flutter build ipa 会生成 build/ios/ipa/*.ipa，再取消注释下列上传
+      # - name: Upload to TestFlight
+      #   if: startsWith(github.ref, 'refs/tags/')
+      #   uses: apple-actions/upload-testflight-build@v1
+      #   with:
+      #     app-path: build/ios/ipa/*.ipa
+      #     issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+      #     api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
   linux:
     name: Linux
@@ -127,6 +145,33 @@ jobs:
             dist/**/**/*.rpm
             dist/**/**/*.AppImage
 
+  snap:
+    name: Snap Store
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set snap version from tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          sed -i "s/^version: .*/version: \"$VERSION\"/" snap/snapcraft.yaml
+      - uses: snapcore/action-build@v1
+        id: build
+        with:
+          path: .
+      - name: Release Snap to GitHub
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ steps.build.outputs.snap }}
+      - name: Publish to Snap Store
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: stable
+
   macos:
     name: MacOS
     runs-on: macos-latest
@@ -151,6 +196,11 @@ jobs:
         with:
           files: |
             ./casazima_cli.dmg
+      # Mac App Store 需先配置签名与公证，并构建 .pkg/.app 后再上传，以下为占位说明
+      # - name: Notarize DMG (optional, for distribution outside App Store)
+      #   uses: apple-actions/notarize-dmg@v1
+      # - name: Upload to Mac App Store (需签名 pkg)
+      #   uses: apple-actions/upload-macos-app@v1
 
   windows:
     name: Windows
@@ -179,6 +229,22 @@ jobs:
         with:
           files: |
             ./build/windows/x64/runner/Release/*.msix
+      - name: Get MSIX path for Microsoft Store
+        if: startsWith(github.ref, 'refs/tags/')
+        id: msix
+        run: |
+          $f = Get-ChildItem -Path "build\windows\x64\runner\Release\*.msix" | Select-Object -First 1
+          echo "path=$($f.FullName)" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+      - name: Upload MSIX to Microsoft Store
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: isaacrlevin/windows-store-action@v1
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          app-id: ${{ secrets.MICROSOFT_STORE_APP_ID }}
+          package-path: ${{ steps.msix.outputs.path }}
       - name: Building the installer
         run: |
           "%programfiles(x86)%\Inno Setup 6\iscc.exe" "windows-setup.iss"

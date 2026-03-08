@@ -1,5 +1,6 @@
+# version 在 CI 中由 tag 注入，本地可写死
 name: casazima-cli
-version: 1.0.0
+version: "1.0.0"
 summary: CasaZima CLI App
 description: CasaZima CLI desktop application
 

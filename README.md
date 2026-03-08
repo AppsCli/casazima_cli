@@ -27,7 +27,7 @@ This project integrates the official frontend `CasaOS-UI/` code locally for refe
 | **Windows** | MSIX / Setup.exe | MSIX for Microsoft Store; Setup.exe is Inno Setup installer |
 | **Linux** | deb / rpm / AppImage / Flatpak / tar.gz | deb/rpm for major distros; AppImage portable; Flatpak sandbox; tar.gz portable archive |
 
-Release builds are available from [GitHub Releases](https://github.com/iotserv/casazima_cli/releases). Pushing a `v*.*.*` tag triggers automatic builds.
+Release builds are available from [GitHub Releases](https://github.com/iotserv/casazima_cli/releases). Pushing a `v*.*.*` tag triggers automatic builds. Optionally, builds can be auto-submitted to **Snap Store**, **Microsoft Store**, **Google Play**, and **Apple App Store** (see [Store publishing guide](docs/STORE_PUBLISH.md) and GitHub Actions secrets).
 
 ---
 
