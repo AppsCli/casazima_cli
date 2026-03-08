@@ -19,6 +19,7 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
   final _hostController = TextEditingController();
   final _portController = TextEditingController(text: '80');
   bool _useHttps = false;
+  NasType _nasType = NasType.casaos;
   ServerConfig? _editingServer;
 
   @override
@@ -36,11 +37,13 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
       _hostController.text = server.host;
       _portController.text = server.port.toString();
       _useHttps = server.useHttps;
+      _nasType = server.nasType;
     } else {
       _nameController.clear();
       _hostController.clear();
       _portController.text = '80';
       _useHttps = false;
+      _nasType = NasType.casaos;
     }
 
     final l10n = AppLocalizations.of(context)!;
@@ -65,6 +68,23 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                       return l10n.serverNameRequired;
                     }
                     return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<NasType>(
+                  value: _nasType,
+                  decoration: InputDecoration(
+                    labelText: l10n.nasType,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: NasType.values.map((t) {
+                    return DropdownMenuItem(
+                      value: t,
+                      child: Text(t == NasType.casaos ? l10n.nasTypeCasaOS : l10n.nasTypeZimaOS),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) setState(() => _nasType = value);
                   },
                 ),
                 const SizedBox(height: 16),
@@ -145,6 +165,7 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
       port: int.parse(_portController.text),
       useHttps: _useHttps,
       isActive: _editingServer?.isActive ?? false,
+      nasType: _nasType,
     );
 
     if (_editingServer != null) {
@@ -211,7 +232,17 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
                     color: server.isActive ? Colors.green : Colors.grey,
                   ),
                   title: Text(server.name),
-                  subtitle: Text(server.baseUrl),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(server.baseUrl),
+                      const SizedBox(height: 2),
+                      Text(
+                        server.nasType == NasType.casaos ? l10n.nasTypeCasaOS : l10n.nasTypeZimaOS,
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                      ),
+                    ],
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

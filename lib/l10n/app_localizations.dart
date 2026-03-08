@@ -937,6 +937,24 @@ abstract class AppLocalizations {
   /// **'Edit server'**
   String get editServer;
 
+  /// No description provided for @nasType.
+  ///
+  /// In en, this message translates to:
+  /// **'NAS type'**
+  String get nasType;
+
+  /// No description provided for @nasTypeCasaOS.
+  ///
+  /// In en, this message translates to:
+  /// **'CasaOS'**
+  String get nasTypeCasaOS;
+
+  /// No description provided for @nasTypeZimaOS.
+  ///
+  /// In en, this message translates to:
+  /// **'ZimaOS'**
+  String get nasTypeZimaOS;
+
   /// No description provided for @serverName.
   ///
   /// In en, this message translates to:

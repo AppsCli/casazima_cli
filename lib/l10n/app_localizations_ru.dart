@@ -473,6 +473,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editServer => 'Edit server';
 
   @override
+  String get nasType => 'NAS type';
+
+  @override
+  String get nasTypeCasaOS => 'CasaOS';
+
+  @override
+  String get nasTypeZimaOS => 'ZimaOS';
+
+  @override
   String get serverName => 'Server name';
 
   @override

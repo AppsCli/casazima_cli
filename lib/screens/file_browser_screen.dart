@@ -24,7 +24,8 @@ class _FileBrowserScreenState extends State<FileBrowserScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<FileProvider>(context, listen: false);
-      provider.loadFolder(widget.initialPath ?? '/DATA');
+      // null 时由 FileProvider 根据当前 NAS 类型选择默认路径（CasaOS: /DATA，ZimaOS: /media/ZimaOS-HD）
+      provider.loadFolder(widget.initialPath);
     });
   }
 

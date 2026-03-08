@@ -1,9 +1,12 @@
+// ZimaOS API 参考：reference-material/casaZimaOS/zimaLogin.dart、casaZimaOS/zima/files.dart、casaZimaOS/zima/installedApps.dart
+// 登录：/v1/users/login（与 CasaOS 相同）；文件：/v2_1/files/file、/v2_1/files/file/trash、/v3/file；已安装应用：/v2/app_management/web/appgrid（与 CasaOS 相同）
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/server_config.dart';
 import '../models/user.dart';
 import '../models/system_info.dart';
 import '../models/app_info.dart';
@@ -17,6 +20,16 @@ class ApiService {
   Future<String?> getBaseUrl() async {
     final activeServer = await _configService.getActiveServer();
     return activeServer?.baseUrl;
+  }
+
+  Future<ServerConfig?> _getActiveServer() async {
+    return _configService.getActiveServer();
+  }
+
+  /// 获取当前服务器的默认文件根路径（CasaOS: /DATA，ZimaOS: /media/ZimaOS-HD）
+  Future<String> getDefaultFilesPath() async {
+    final server = await _getActiveServer();
+    return server?.defaultFilesPath ?? '/DATA';
   }
 
   Future<Map<String, String>> _getHeaders({bool includeAuth = true}) async {
@@ -174,7 +187,7 @@ class ApiService {
     }
   }
 
-  Future<http.Response> _delete(String endpoint, {Map<String, dynamic>? body}) async {
+  Future<http.Response> _delete(String endpoint, {Object? body}) async {
     final baseUrl = await getBaseUrl();
     if (baseUrl == null) {
       throw Exception('No active server configured');
@@ -276,9 +289,23 @@ class ApiService {
   }
 
   // System APIs（与 CasaOS-UI 一致：非 /v2 路径使用 /v1 前缀）
+  // CasaOS: /v1/sys/version；ZimaOS: /v2/zimaos/device/info
   Future<SystemInfo> getVersion() async {
+    final server = await _getActiveServer();
+    if (server == null) throw Exception('No active server configured');
+
+    if (server.nasType == NasType.zimaos) {
+      final response = await _get('/v2/zimaos/device/info');
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        final version = json['os_version'] as String? ?? '';
+        return SystemInfo(version: version, hardware: null);
+      }
+      _logErrorResponse('getVersion (ZimaOS)', response);
+      throw Exception('Failed to get version');
+    }
+
     final response = await _get('/v1/sys/version');
-    
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       if (json['success'] == 200) {
@@ -541,15 +568,32 @@ class ApiService {
     throw Exception('Failed to get app info');
   }
 
-  // File APIs（与 CasaOS-UI 一致：folder/file 使用 /v1 前缀）
+  // File APIs
+  // CasaOS: GET /v1/folder?path=，响应 data.content；ZimaOS: GET /v2_1/files/file?path=，响应 content
   Future<List<FileItem>> getFolderList(String path) async {
+    final server = await _getActiveServer();
+    if (server == null) throw Exception('No active server configured');
+
+    if (server.nasType == NasType.zimaos) {
+      final response = await _get(
+        '/v2_1/files/file',
+        queryParams: {'path': path},
+      );
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        final content = json['content'] as List? ?? [];
+        return content
+            .map((e) => _zimaFileItemToFileItem(e as Map<String, dynamic>))
+            .toList();
+      }
+      _logErrorResponse('getFolderList (ZimaOS)', response);
+      throw Exception('Failed to get folder list');
+    }
+
     final response = await _get(
       '/v1/folder',
-      queryParams: {
-        'path': path,
-      },
+      queryParams: {'path': path},
     );
-    
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       if (json['success'] == 200) {
@@ -562,6 +606,28 @@ class ApiService {
     }
     _logErrorResponse('getFolderList', response);
     throw Exception('Failed to get folder list');
+  }
+
+  /// ZimaOS 文件项格式：modified 为 unix 时间戳，需转换为 date 字符串
+  FileItem _zimaFileItemToFileItem(Map<String, dynamic> json) {
+    final modified = json['modified'];
+    String? dateStr;
+    if (modified != null) {
+      if (modified is int) {
+        dateStr = DateTime.fromMillisecondsSinceEpoch(modified * 1000).toIso8601String();
+      } else {
+        dateStr = modified.toString();
+      }
+    }
+    return FileItem(
+      name: json['name'] as String? ?? '',
+      path: json['path'] as String? ?? '',
+      isDir: json['is_dir'] as bool? ?? false,
+      size: json['size'] as int?,
+      date: dateStr ?? json['date'] as String?,
+      write: json['write'] as bool?,
+      extensions: json['extensions']?.toString(),
+    );
   }
 
   Future<void> createFolder(String path) async {
@@ -594,11 +660,25 @@ class ApiService {
   }
 
   Future<void> deleteFolder(String path) async {
+    final server = await _getActiveServer();
+    if (server == null) throw Exception('No active server configured');
+
+    if (server.nasType == NasType.zimaos) {
+      final response = await _delete(
+        '/v2_1/files/file/trash',
+        body: [path],
+      );
+      if (response.statusCode != 200) {
+        _logErrorResponse('deleteFolder (ZimaOS)', response);
+        throw Exception('Failed to delete folder');
+      }
+      return;
+    }
+
     final response = await _delete(
       '/v1/folder',
       body: {'path': path},
     );
-
     if (response.statusCode != 200) {
       _logErrorResponse('deleteFolder', response);
       final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -607,6 +687,7 @@ class ApiService {
   }
 
   // File operations
+  /// CasaOS: GET /v1/file/content；ZimaOS 与 icewhale-files 同源，接口可能兼容
   Future<String> getFileContent(String path) async {
     final response = await _get(
       '/v1/file/content',
@@ -672,11 +753,25 @@ class ApiService {
   }
 
   Future<void> deleteFile(String path) async {
+    final server = await _getActiveServer();
+    if (server == null) throw Exception('No active server configured');
+
+    if (server.nasType == NasType.zimaos) {
+      final response = await _delete(
+        '/v2_1/files/file/trash',
+        body: [path],
+      );
+      if (response.statusCode != 200) {
+        _logErrorResponse('deleteFile (ZimaOS)', response);
+        throw Exception('Failed to delete file');
+      }
+      return;
+    }
+
     final response = await _delete(
       '/v1/file',
       body: {'path': path},
     );
-
     if (response.statusCode != 200) {
       _logErrorResponse('deleteFile', response);
       final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -689,30 +784,61 @@ class ApiService {
     return '/v1/file?path=$path&timestamp=${DateTime.now().millisecondsSinceEpoch}';
   }
 
-  /// 获取文件流式播放 URL（与 CasaOS-UI getFileUrl 一致：baseUrl/v3/file?path=...&token=...）
+  /// 获取文件流式播放 URL
+  /// CasaOS: /v3/file?path=...&token=...；ZimaOS: /v3/file?files=...&token=...&action=preview
   /// 用于视频/音频流式预览，无需先下载
   /// 返回 (url, headers)，headers 可用于 video_player/audioplayers 的 httpHeaders
   Future<({String url, Map<String, String> headers})> getFileStreamingUrl(String path) async {
-    final baseUrl = await getBaseUrl();
-    if (baseUrl == null) throw Exception('No active server configured');
+    final server = await _getActiveServer();
+    if (server == null) throw Exception('No active server configured');
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     if (token == null || token.isEmpty) {
       throw Exception('Not logged in, cannot get file streaming URL');
     }
+    final baseUrl = server.baseUrl;
     final base = baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final Map<String, String> queryParams;
+    if (server.nasType == NasType.zimaos) {
+      queryParams = {'files': path, 'token': token, 'action': 'preview'};
+    } else {
+      queryParams = {'path': path, 'token': token};
+    }
     final uri = Uri.parse(base).replace(
       path: '/v3/file',
-      queryParameters: {'path': path, 'token': token},
+      queryParameters: queryParams,
     );
     final url = uri.toString();
-    // CasaOS API 接受 query 中的 token，部分场景也可用 Authorization header
     final headers = <String, String>{'Authorization': token};
     return (url: url, headers: headers);
   }
 
-  /// 下载文件为字节流（与 CasaOS-UI file.download 一致：GET /v1/file?path=...&timestamp=...）
+  /// 下载文件为字节流
+  /// CasaOS: GET /v1/file?path=...&timestamp=...；ZimaOS: GET /v3/file?files=...&token=...&action=download
   Future<Uint8List> downloadFileAsBytes(String path) async {
+    final server = await _getActiveServer();
+    if (server == null) throw Exception('No active server configured');
+
+    if (server.nasType == NasType.zimaos) {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+      if (token == null || token.isEmpty) throw Exception('Not logged in');
+      final base = server.baseUrl.endsWith('/')
+          ? server.baseUrl.substring(0, server.baseUrl.length - 1)
+          : server.baseUrl;
+      final uri = Uri.parse(base).replace(
+        path: '/v3/file',
+        queryParameters: {'files': path, 'token': token, 'action': 'download'},
+      );
+      final headers = await _getHeaders();
+      final response = await http.get(uri, headers: headers);
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      }
+      _logErrorResponse('downloadFileAsBytes (ZimaOS)', response);
+      throw Exception('Failed to download file');
+    }
+
     final response = await _get(
       '/v1/file',
       queryParams: {
@@ -728,16 +854,35 @@ class ApiService {
   }
 
   /// 流式下载文件到临时目录（用于视频预览 fallback，避免大文件占满内存）
+  /// CasaOS: /v1/file；ZimaOS: /v3/file?files=...&action=preview
   Future<String> downloadFileToTemp(String path, String fileName) async {
-    final baseUrl = await getBaseUrl();
-    if (baseUrl == null) throw Exception('No active server configured');
-    final uri = Uri.parse('$baseUrl/v1/file').replace(
-      queryParameters: {
-        'path': path,
-        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-      },
-    );
-    final headers = await _getHeaders();
+    final server = await _getActiveServer();
+    if (server == null) throw Exception('No active server configured');
+
+    Uri uri;
+    Map<String, String> headers;
+    if (server.nasType == NasType.zimaos) {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+      if (token == null || token.isEmpty) throw Exception('Not logged in');
+      final base = server.baseUrl.endsWith('/')
+          ? server.baseUrl.substring(0, server.baseUrl.length - 1)
+          : server.baseUrl;
+      uri = Uri.parse(base).replace(
+        path: '/v3/file',
+        queryParameters: {'files': path, 'token': token, 'action': 'preview'},
+      );
+      headers = await _getHeaders();
+    } else {
+      uri = Uri.parse(server.baseUrl).replace(
+        path: '/v1/file',
+        queryParameters: {
+          'path': path,
+          'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+        },
+      );
+      headers = await _getHeaders();
+    }
     final request = http.Request('GET', uri);
     request.headers.addAll(headers);
     final client = http.Client();
@@ -868,7 +1013,7 @@ class ApiService {
 
   // ---------- App Store (应用市场) API，与 CasaOS-UI / OpenAPI 一致 ----------
 
-  /// GET /v2/app_management/categories 分类列表
+  /// GET /v2/app_management/categories 分类列表（CasaOS/ZimaOS 可能返回不同结构）
   Future<List<Map<String, dynamic>>> getStoreCategories() async {
     final response = await _get('/v2/app_management/categories');
     if (response.statusCode != 200) {
@@ -878,12 +1023,23 @@ class ApiService {
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final data = json['data'];
     if (data is List) {
-      return data.map((e) => e as Map<String, dynamic>).toList();
+      return data
+          .map((e) => e is Map<String, dynamic> ? e : <String, dynamic>{'name': e.toString()})
+          .toList();
+    }
+    if (data is Map<String, dynamic>) {
+      final list = data['list'] ?? data['data'];
+      if (list is List) {
+        return list
+            .map((e) => e is Map<String, dynamic> ? e : <String, dynamic>{'name': e.toString()})
+            .toList();
+      }
     }
     return [];
   }
 
   /// GET /v2/app_management/apps 应用市场列表；category/author_type 可选，recommend 为 true 时仅推荐
+  /// CasaOS: data.list 为 Map；ZimaOS: data.list 为 List（参考 casaZimaOS/sub/appStore.dart）
   Future<StoreAppListResult> getStoreAppList({
     String? category,
     String? authorType,
@@ -899,20 +1055,43 @@ class ApiService {
       throw Exception('Failed to get app store list');
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
-    final data = json['data'] as Map<String, dynamic>?;
-    if (data == null) return StoreAppListResult(installedIds: [], list: []);
+    final dataRaw = json['data'];
+    if (dataRaw == null) return StoreAppListResult(installedIds: [], list: []);
 
-    final installedRaw = data['installed'];
-    final listRaw = data['list'] as Map<String, dynamic>? ?? {};
-    final installedIds = (installedRaw is List)
-        ? installedRaw.map((e) => e.toString()).toSet().toList()
-        : <String>[];
+    // ZimaOS 可能返回 data 为 List（应用列表）或 Map（含 list、installed）
+    List<String> installedIds = [];
+    dynamic listRaw;
+    if (dataRaw is List) {
+      listRaw = dataRaw;
+    } else if (dataRaw is Map<String, dynamic>) {
+      installedIds = (dataRaw['installed'] is List)
+          ? (dataRaw['installed'] as List).map((e) => e.toString()).toSet().toList()
+          : <String>[];
+      listRaw = dataRaw['list'];
+    } else {
+      return StoreAppListResult(installedIds: [], list: []);
+    }
+
     final list = <StoreAppInfo>[];
-    for (final entry in listRaw.entries) {
-      final id = entry.key.toString();
-      final value = entry.value;
-      if (value is Map<String, dynamic>) {
-        list.add(StoreAppInfo.fromStoreEntry(id, value));
+
+    if (listRaw is Map<String, dynamic>) {
+      // CasaOS 格式：list 为 Map<id, appInfo>
+      for (final entry in listRaw.entries) {
+        final id = entry.key.toString();
+        final value = entry.value;
+        if (value is Map<String, dynamic>) {
+          list.add(StoreAppInfo.fromStoreEntry(id, value));
+        }
+      }
+    } else if (listRaw is List) {
+      // ZimaOS 格式：list 为 List<appInfo>，id 取自 appInfo["main"]
+      for (final item in listRaw) {
+        if (item is Map<String, dynamic>) {
+          final id = item['main']?.toString() ?? item['name']?.toString() ?? '';
+          if (id.isNotEmpty) {
+            list.add(StoreAppInfo.fromStoreEntry(id, item));
+          }
+        }
       }
     }
     return StoreAppListResult(installedIds: installedIds, list: list);

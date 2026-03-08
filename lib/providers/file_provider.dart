@@ -25,14 +25,15 @@ class FileProvider with ChangeNotifier {
     return parts.length > 1;
   }
 
-  Future<void> loadFolder(String path) async {
+  Future<void> loadFolder(String? path) async {
+    final pathToLoad = path ?? await _apiService.getDefaultFilesPath();
     _isLoading = true;
     _error = null;
-    _currentPath = path;
+    _currentPath = pathToLoad;
     notifyListeners();
 
     try {
-      final items = await _apiService.getFolderList(path);
+      final items = await _apiService.getFolderList(pathToLoad);
       // Filter hidden files and sort (directories first)
       final filtered = items.where((item) => !item.name.startsWith('.')).toList();
       filtered.sort((a, b) {
@@ -56,7 +57,7 @@ class FileProvider with ChangeNotifier {
   }
 
   Future<void> navigateTo(String path) async {
-    await loadFolder(path);
+    await loadFolder(path.isEmpty ? null : path);
   }
 
   Future<void> navigateUp() async {

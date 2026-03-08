@@ -468,6 +468,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editServer => '编辑服务器';
 
   @override
+  String get nasType => 'NAS 类型';
+
+  @override
+  String get nasTypeCasaOS => 'CasaOS';
+
+  @override
+  String get nasTypeZimaOS => 'ZimaOS';
+
+  @override
   String get serverName => '服务器名称';
 
   @override
@@ -1015,6 +1024,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get editServer => '編輯伺服器';
+
+  @override
+  String get nasType => 'NAS 類型';
+
+  @override
+  String get nasTypeCasaOS => 'CasaOS';
+
+  @override
+  String get nasTypeZimaOS => 'ZimaOS';
 
   @override
   String get serverName => '伺服器名稱';
