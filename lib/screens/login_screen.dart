@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/server_config_provider.dart';
 import '../services/api_service.dart';
+import '../services/server_config_service.dart';
 
 const _keyRememberCredentials = 'remember_credentials';
 const _keySavedUsername = 'saved_username';
@@ -40,11 +41,24 @@ class _LoginScreenState extends State<LoginScreen> {
     final remember = prefs.getBool(_keyRememberCredentials) ?? false;
     if (!mounted) return;
     setState(() => _rememberCredentials = remember);
+    String? username;
     if (remember) {
-      final username = prefs.getString(_keySavedUsername);
+      username = prefs.getString(_keySavedUsername);
       final password = prefs.getString(_keySavedPassword);
       if (username != null) _usernameController.text = username;
       if (password != null) _passwordController.text = password;
+    }
+    // 未保存过账号且当前为默认 demo 服务器时，预填体验账号
+    if ((username == null || username.isEmpty) && mounted) {
+      final service = ServerConfigService();
+      await service.getAllServers(); // 先触发注入默认服务器并设置当前活动服务器
+      final active = await service.getActiveServer();
+      if (active?.id == ServerConfigService.defaultDemoServerId && mounted) {
+        setState(() {
+          _usernameController.text = 'casaos';
+          _passwordController.text = 'casaos';
+        });
+      }
     }
   }
 

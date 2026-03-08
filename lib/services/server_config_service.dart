@@ -7,15 +7,37 @@ class ServerConfigService {
   static const String _key = 'server_configs';
   static const String _activeKey = 'active_server_id';
 
+  /// 默认体验服务器的固定 ID，用于识别并预填 demo 账号
+  static const String defaultDemoServerId = 'default-demo';
+
   final _uuid = const Uuid();
+
+  /// 返回内置的默认 demo 体验服务器配置
+  static ServerConfig get defaultDemoServer => ServerConfig(
+        id: defaultDemoServerId,
+        name: 'demo',
+        host: 'demo.casaos.io',
+        port: 80,
+        useHttps: false,
+        isActive: true,
+        nasType: NasType.casaos,
+      );
 
   Future<List<ServerConfig>> getAllServers() async {
     final prefs = await SharedPreferences.getInstance();
     final configsJson = prefs.getStringList(_key) ?? [];
-    
-    return configsJson
+    var list = configsJson
         .map((json) => ServerConfig.fromJson(jsonDecode(json)))
         .toList();
+
+    // 若没有任何服务器，则注入默认 demo 体验服务器
+    if (list.isEmpty) {
+      list = [defaultDemoServer];
+      await _saveServers(list);
+      await prefs.setString(_activeKey, defaultDemoServerId);
+    }
+
+    return list;
   }
 
   Future<ServerConfig?> getActiveServer() async {
