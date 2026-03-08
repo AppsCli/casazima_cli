@@ -18,7 +18,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings => 'Paramètres';
 
   @override
+  String get about => 'À propos';
+
+  @override
   String get appearance => 'Apparence';
+
+  @override
+  String get openSource => 'Open source';
+
+  @override
+  String get tapToOpen => 'Appuyez pour ouvrir dans le navigateur';
 
   @override
   String get themeMode => 'Mode du thème';

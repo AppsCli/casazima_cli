@@ -18,7 +18,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings => '設定';
 
   @override
+  String get about => 'について';
+
+  @override
   String get appearance => '外観';
+
+  @override
+  String get openSource => 'オープンソース';
+
+  @override
+  String get tapToOpen => 'タップしてブラウザで開く';
 
   @override
   String get themeMode => 'テーマモード';

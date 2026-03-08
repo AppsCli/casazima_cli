@@ -18,7 +18,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings => 'Ajustes';
 
   @override
+  String get about => 'Acerca de';
+
+  @override
   String get appearance => 'Apariencia';
+
+  @override
+  String get openSource => 'Código abierto';
+
+  @override
+  String get tapToOpen => 'Toca para abrir en el navegador';
 
   @override
   String get themeMode => 'Modo de tema';

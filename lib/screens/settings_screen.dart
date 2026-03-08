@@ -76,6 +76,13 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
+                      leading: const Icon(Icons.info_outline),
+                      title: Text(l10n.about),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/about'),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
                       title: Text(l10n.themeMode),
                       subtitle: Text(_themeModeLabel(context, themeProvider.themeMode)),
                     ),

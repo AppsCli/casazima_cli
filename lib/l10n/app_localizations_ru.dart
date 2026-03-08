@@ -18,7 +18,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings => 'Настройки';
 
   @override
+  String get about => 'О приложении';
+
+  @override
   String get appearance => 'Внешний вид';
+
+  @override
+  String get openSource => 'Открытый исходный код';
+
+  @override
+  String get tapToOpen => 'Нажмите, чтобы открыть в браузере';
 
   @override
   String get themeMode => 'Режим темы';

@@ -18,7 +18,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settings => '설정';
 
   @override
+  String get about => '정보';
+
+  @override
   String get appearance => '모양';
+
+  @override
+  String get openSource => '오픈 소스';
+
+  @override
+  String get tapToOpen => '탭하여 브라우저에서 열기';
 
   @override
   String get themeMode => '테마 모드';

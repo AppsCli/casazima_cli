@@ -18,7 +18,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settings => 'الإعدادات';
 
   @override
+  String get about => 'حول';
+
+  @override
   String get appearance => 'المظهر';
+
+  @override
+  String get openSource => 'المصدر المفتوح';
+
+  @override
+  String get tapToOpen => 'انقر لفتح في المتصفح';
 
   @override
   String get themeMode => 'وضع السمة';

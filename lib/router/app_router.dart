@@ -8,6 +8,7 @@ import '../screens/file_browser_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/app_store_screen.dart';
 import '../screens/app_detail_screen.dart';
+import '../screens/about_screen.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 
@@ -23,9 +24,10 @@ class AppRouter {
         final isWelcome = state.matchedLocation == '/welcome';
         final isServerConfig = state.matchedLocation == '/server-config';
         final isSettings = state.matchedLocation == '/settings';
+        final isAbout = state.matchedLocation == '/about';
 
-        // Allow access to server config, welcome, and settings (e.g. language) when not logged in
-        if (isServerConfig || isWelcome || isSettings) {
+        // Allow access to server config, welcome, settings, and about when not logged in
+        if (isServerConfig || isWelcome || isSettings || isAbout) {
           return null;
         }
 
@@ -94,6 +96,11 @@ class AppRouter {
           path: '/app-store',
           name: 'app-store',
           builder: (context, state) => const AppStoreScreen(),
+        ),
+        GoRoute(
+          path: '/about',
+          name: 'about',
+          builder: (context, state) => const AboutScreen(),
         ),
         GoRoute(
           path: '/app/:id',

@@ -18,7 +18,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settings => '设置';
 
   @override
+  String get about => '关于';
+
+  @override
   String get appearance => '外观';
+
+  @override
+  String get openSource => '开源地址';
+
+  @override
+  String get tapToOpen => '点击在浏览器中打开';
 
   @override
   String get themeMode => '主题模式';
@@ -576,7 +585,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settings => '設定';
 
   @override
+  String get about => '關於';
+
+  @override
   String get appearance => '外觀';
+
+  @override
+  String get openSource => '開源地址';
+
+  @override
+  String get tapToOpen => '點擊在瀏覽器中打開';
 
   @override
   String get themeMode => '主題模式';
