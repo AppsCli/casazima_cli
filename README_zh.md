@@ -151,6 +151,20 @@ sudo dnf install gstreamer1-devel gstreamer1-plugins-base-devel
 sudo pacman -S gstreamer gst-plugins-base
 ```
 
+### Windows 常见错误：WRONG_VERSION_NUMBER
+
+在 Windows 上连接服务器时，若出现 `WRONG_VERSION_NUMBER(tls_record.cc:127)` 或 `HandshakeException`，通常表示 **HTTP/HTTPS 协议不匹配**：
+
+- **原因**：客户端期望 TLS（HTTPS）握手，但服务器返回的是 HTTP 明文，或反之。
+- **常见情况**：CasaOS / ZimaOS 默认使用 **HTTP** 的 80 端口，若在服务器配置中勾选了「使用 HTTPS」，会触发此错误。
+- **解决**：
+  1. 进入「服务器配置」→ 编辑对应服务器
+  2. 若服务器实际为 HTTP（如 `http://192.168.1.100:80`），请**取消勾选**「使用 HTTPS」
+  3. 若服务器确实使用 HTTPS（如 `https://...:443`），请确认勾选「使用 HTTPS」且端口正确
+  4. 在浏览器中访问 `http://服务器IP:80` 或 `https://服务器IP:443` 验证协议是否一致
+
+若仍无法解决，可检查企业网络代理、防火墙或 TLS 拦截是否影响连接。
+
 ---
 
 ## 安装与运行

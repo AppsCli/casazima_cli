@@ -54,84 +54,103 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
         content: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.serverName,
-                    border: const OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return l10n.serverNameRequired;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<NasType>(
-                  value: _nasType,
-                  decoration: InputDecoration(
-                    labelText: l10n.nasType,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: NasType.values.map((t) {
-                    return DropdownMenuItem(
-                      value: t,
-                      child: Text(t == NasType.casaos ? l10n.nasTypeCasaOS : l10n.nasTypeZimaOS),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) setState(() => _nasType = value);
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _hostController,
-                  decoration: InputDecoration(
-                    labelText: l10n.hostAddress,
-                    border: const OutlineInputBorder(),
-                    hintText: l10n.hostAddressHint,
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return l10n.hostAddressRequired;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _portController,
-                  decoration: InputDecoration(
-                    labelText: l10n.port,
-                    border: const OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return l10n.portRequired;
-                    }
-                    final port = int.tryParse(value);
-                    if (port == null || port < 1 || port > 65535) {
-                      return l10n.portInvalid;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                CheckboxListTile(
-                  title: Text(l10n.useHttps),
-                  value: _useHttps,
-                  onChanged: (value) {
-                    setState(() {
-                      _useHttps = value ?? false;
-                    });
-                  },
-                ),
-              ],
+            child: StatefulBuilder(
+              builder: (context, setDialogState) {
+                final port = int.tryParse(_portController.text);
+                final isPort80 = port == 80;
+                final isPort443 = port == 443;
+                final checkboxValue = isPort80 ? false : (isPort443 ? true : _useHttps);
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: l10n.serverName,
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return l10n.serverNameRequired;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<NasType>(
+                      value: _nasType,
+                      decoration: InputDecoration(
+                        labelText: l10n.nasType,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: NasType.values.map((t) {
+                        return DropdownMenuItem(
+                          value: t,
+                          child: Text(t == NasType.casaos ? l10n.nasTypeCasaOS : l10n.nasTypeZimaOS),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) setState(() => _nasType = value);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _hostController,
+                      decoration: InputDecoration(
+                        labelText: l10n.hostAddress,
+                        border: const OutlineInputBorder(),
+                        hintText: l10n.hostAddressHint,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return l10n.hostAddressRequired;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _portController,
+                      decoration: InputDecoration(
+                        labelText: l10n.port,
+                        border: const OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        final p = int.tryParse(value);
+                        if (p == 80) {
+                          _useHttps = false;
+                        } else if (p == 443) {
+                          _useHttps = true;
+                        }
+                        setDialogState(() {});
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return l10n.portRequired;
+                        }
+                        final port = int.tryParse(value);
+                        if (port == null || port < 1 || port > 65535) {
+                          return l10n.portInvalid;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    CheckboxListTile(
+                      title: Text(l10n.useHttps),
+                      value: checkboxValue,
+                      onChanged: (isPort80 || isPort443)
+                          ? null
+                          : (value) {
+                              setDialogState(() {
+                                _useHttps = value ?? false;
+                              });
+                            },
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -157,13 +176,15 @@ class _ServerConfigScreenState extends State<ServerConfigScreen> {
   void _saveServer() {
     final provider = Provider.of<ServerConfigProvider>(context, listen: false);
     final configService = ServerConfigService();
-    
+    final port = int.parse(_portController.text);
+    final useHttps = port == 80 ? false : (port == 443 ? true : _useHttps);
+
     final config = ServerConfig(
       id: _editingServer?.id ?? configService.generateId(),
       name: _nameController.text,
       host: _hostController.text,
-      port: int.parse(_portController.text),
-      useHttps: _useHttps,
+      port: port,
+      useHttps: useHttps,
       isActive: _editingServer?.isActive ?? false,
       nasType: _nasType,
     );
