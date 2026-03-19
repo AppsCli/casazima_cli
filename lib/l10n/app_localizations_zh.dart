@@ -569,6 +569,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String initFailed(Object e) {
     return '初始化失败：$e';
   }
+
+  @override
+  String get openAppWith => '应用打开方式';
+
+  @override
+  String get builtinBrowser => '内置浏览器';
+
+  @override
+  String get systemBrowser => '系统浏览器';
+
+  @override
+  String get openInSystemBrowser => '使用系统浏览器打开';
+
+  @override
+  String get loading => '加载中...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -1136,4 +1151,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String initFailed(Object e) {
     return '初始化失敗：$e';
   }
+
+  @override
+  String get openAppWith => '應用打開方式';
+
+  @override
+  String get builtinBrowser => '內建瀏覽器';
+
+  @override
+  String get systemBrowser => '系統瀏覽器';
+
+  @override
+  String get openInSystemBrowser => '使用系統瀏覽器打開';
+
+  @override
+  String get loading => '載入中...';
 }

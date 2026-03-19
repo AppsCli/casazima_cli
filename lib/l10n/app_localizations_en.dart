@@ -576,4 +576,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String initFailed(Object e) {
     return 'Init failed: $e';
   }
+
+  @override
+  String get openAppWith => 'Open app with';
+
+  @override
+  String get builtinBrowser => 'Built-in browser';
+
+  @override
+  String get systemBrowser => 'System browser';
+
+  @override
+  String get openInSystemBrowser => 'Open in system browser';
+
+  @override
+  String get loading => 'Loading...';
 }

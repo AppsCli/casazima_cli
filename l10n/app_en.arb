@@ -193,5 +193,10 @@
   "enterDesktop": "Enter desktop",
   "cannotGetInitKey": "Cannot get init key. Please check server status.",
   "initFailed": "Init failed: {e}",
-  "@initFailed": {"placeholders": {"e": {}}}
+  "@initFailed": {"placeholders": {"e": {}}},
+  "openAppWith": "Open app with",
+  "builtinBrowser": "Built-in browser",
+  "systemBrowser": "System browser",
+  "openInSystemBrowser": "Open in system browser",
+  "loading": "Loading..."
 }

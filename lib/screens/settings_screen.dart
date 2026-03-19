@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/theme_provider.dart';
+import '../providers/browser_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -59,8 +60,8 @@ class SettingsScreen extends StatelessWidget {
         ),
         title: Text(l10n.settings),
       ),
-      body: Consumer2<ThemeProvider, LocaleProvider>(
-        builder: (context, themeProvider, localeProvider, child) {
+      body: Consumer3<ThemeProvider, LocaleProvider, BrowserProvider>(
+        builder: (context, themeProvider, localeProvider, browserProvider, child) {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -178,6 +179,41 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.openAppWith,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Card(
+                child: Column(
+                  children: [
+                    RadioListTile<BrowserChoice>(
+                      title: Text(l10n.builtinBrowser),
+                      value: BrowserChoice.builtin,
+                      groupValue: browserProvider.choice,
+                      onChanged: (BrowserChoice? value) {
+                        if (value != null) {
+                          browserProvider.setChoice(value);
+                        }
+                      },
+                    ),
+                    RadioListTile<BrowserChoice>(
+                      title: Text(l10n.systemBrowser),
+                      value: BrowserChoice.system,
+                      groupValue: browserProvider.choice,
+                      onChanged: (BrowserChoice? value) {
+                        if (value != null) {
+                          browserProvider.setChoice(value);
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),

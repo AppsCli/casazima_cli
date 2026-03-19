@@ -10,6 +10,7 @@ import 'providers/file_provider.dart';
 import 'providers/locale_provider.dart';
 import 'router/app_router.dart';
 import 'providers/theme_provider.dart';
+import 'providers/browser_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +33,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => LocaleProvider()..loadFromPreferences(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BrowserProvider()..loadFromPreferences(),
         ),
       ],
       child: const _MaterialAppWithRouter(),

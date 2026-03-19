@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_info.dart';
 import '../providers/app_provider.dart';
+import '../providers/browser_provider.dart';
 import '../services/api_service.dart';
 
 /// 与应用卡片样式一致的固定入口卡片（如 App Store、Files）
@@ -130,11 +131,17 @@ class _AppCardState extends State<AppCard> {
       }
       final url = await _api.getAppLaunchUrl(_composeName!);
       if (url != null && url.isNotEmpty) {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        final browserProvider = Provider.of<BrowserProvider>(context, listen: false);
+        if (browserProvider.useBuiltinBrowser) {
+          if (!context.mounted) return;
+          context.push('/webview?url=${Uri.encodeComponent(url)}');
         } else {
-          _showSnack(l10n.cannotOpen(url));
+          final uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {
+            _showSnack(l10n.cannotOpen(url));
+          }
         }
       } else {
         _showSnack(l10n.cannotGetAppAddress);

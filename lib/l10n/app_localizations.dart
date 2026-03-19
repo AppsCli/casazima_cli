@@ -1134,6 +1134,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Init failed: {e}'**
   String initFailed(Object e);
+
+  /// No description provided for @openAppWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Open app with'**
+  String get openAppWith;
+
+  /// No description provided for @builtinBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in browser'**
+  String get builtinBrowser;
+
+  /// No description provided for @systemBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'System browser'**
+  String get systemBrowser;
+
+  /// No description provided for @openInSystemBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in system browser'**
+  String get openInSystemBrowser;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
 }
 
 class _AppLocalizationsDelegate

@@ -169,5 +169,10 @@
   "accountCreatedHint": "您的帳戶已建立完成，馬上進入桌面體驗 CasaOS / ZimaOS。",
   "enterDesktop": "進入桌面",
   "cannotGetInitKey": "無法取得初始化金鑰，請檢查伺服器狀態",
-  "initFailed": "初始化失敗：{e}"
+  "initFailed": "初始化失敗：{e}",
+  "openAppWith": "應用打開方式",
+  "builtinBrowser": "內建瀏覽器",
+  "systemBrowser": "系統瀏覽器",
+  "openInSystemBrowser": "使用系統瀏覽器打開",
+  "loading": "載入中..."
 }

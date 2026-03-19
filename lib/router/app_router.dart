@@ -9,6 +9,7 @@ import '../screens/settings_screen.dart';
 import '../screens/app_store_screen.dart';
 import '../screens/app_detail_screen.dart';
 import '../screens/about_screen.dart';
+import '../screens/in_app_browser_screen.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 
@@ -108,6 +109,14 @@ class AppRouter {
           builder: (context, state) {
             final id = state.pathParameters['id'] ?? '';
             return AppDetailScreen(appId: id);
+          },
+        ),
+        GoRoute(
+          path: '/webview',
+          name: 'webview',
+          builder: (context, state) {
+            final url = state.uri.queryParameters['url'] ?? '';
+            return InAppBrowserScreen(initialUrl: url);
           },
         ),
       ],
