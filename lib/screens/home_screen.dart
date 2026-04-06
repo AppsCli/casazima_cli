@@ -6,8 +6,10 @@ import '../l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/system_info_provider.dart';
 import '../providers/app_provider.dart';
+import '../ads/mobile_ads_platform.dart';
 import '../widgets/system_status_card.dart';
 import '../widgets/app_grid.dart';
+import '../widgets/mobile_ad_banner.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,6 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       child: Scaffold(
+      bottomNavigationBar: kMobileAdsSupported
+          ? const SafeArea(
+              top: false,
+              child: MobileAdBanner(),
+            )
+          : null,
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [

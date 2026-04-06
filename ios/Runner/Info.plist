@@ -51,5 +51,11 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<!-- ITMS-90683: required when linked code references photo library APIs (e.g. file_picker) -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>CasaZimaCli needs access to your photo library when you choose to import images, videos, or other files from Photos.</string>
+	<!-- AdMob 测试应用 ID，发布前请替换为正式 ID -->
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
 </dict>
 </plist>
