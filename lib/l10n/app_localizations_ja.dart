@@ -18,7 +18,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settings => '設定';
 
   @override
-  String get about => 'について';
+  String get about => 'アプリについて';
 
   @override
   String get appearance => '外観';
@@ -30,34 +30,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tapToOpen => 'タップしてブラウザで開く';
 
   @override
-  String get themeMode => 'テーマモード';
+  String get themeMode => 'テーマ';
 
   @override
-  String get followSystem => 'システムに従う';
+  String get followSystem => 'システムに合わせる';
 
   @override
-  String get lightMode => 'ライトモード';
+  String get lightMode => 'ライト';
 
   @override
-  String get darkMode => 'ダークモード';
+  String get darkMode => 'ダーク';
 
   @override
   String get themeColor => 'テーマカラー';
 
   @override
-  String get themeColorDescription => 'テーマカラーを選択すると、ライトモードとダークモードの両方に適用されます。';
+  String get themeColorDescription => 'テーマの色を選びます。ライト／ダークの両方に適用されます。';
 
   @override
   String get language => '言語';
 
   @override
-  String get languageFollowSystem => 'システムに従う';
+  String get languageFollowSystem => 'システムに合わせる';
 
   @override
-  String get files => 'ファイル管理';
+  String get files => 'ファイル';
 
   @override
-  String get serverConfig => 'サーバー設定';
+  String get serverConfig => 'サーバー';
 
   @override
   String get refresh => '更新';
@@ -95,393 +95,389 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noApps => 'アプリがありません';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'キャンセル';
 
   @override
   String get ok => 'OK';
 
   @override
-  String get retry => 'Retry';
+  String get retry => '再試行';
 
   @override
-  String get back => 'Back';
+  String get back => '戻る';
 
   @override
-  String get delete => 'Delete';
+  String get delete => '削除';
 
   @override
-  String get cannotGetAppAddress => 'Cannot get app address';
+  String get cannotGetAppAddress => 'アプリのアドレスを取得できません';
 
   @override
   String cannotOpen(Object url) {
-    return 'Cannot open: $url';
+    return '開けません: $url';
   }
 
   @override
   String openFailed(Object e) {
-    return 'Open failed: $e';
+    return '開けませんでした: $e';
   }
 
   @override
-  String get appTypeNotSupported =>
-      'This app type does not support this operation';
+  String get appTypeNotSupported => 'この種類のアプリはこの操作に対応していません';
 
   @override
-  String get starting => 'Starting';
+  String get starting => '起動中';
 
   @override
-  String get restarting => 'Restarting';
+  String get restarting => '再起動中';
 
   @override
-  String get restart => 'Restart';
+  String get restart => '再起動';
 
   @override
-  String get closed => 'Closed';
+  String get closed => '終了';
 
   @override
   String operationFailed(Object e) {
-    return 'Operation failed: $e';
+    return '操作に失敗しました: $e';
   }
 
   @override
   String tipsTitle(Object name) {
-    return '$name - Tips';
+    return '$name のヒント';
   }
 
   @override
-  String get noDescription =>
-      'No description. Go to settings to modify configuration.';
+  String get noDescription => '説明がありません。設定で構成を変更してください。';
 
   @override
-  String get checkUpdateNotSupported =>
-      'This app does not support check for updates';
+  String get checkUpdateNotSupported => 'このアプリは更新確認に対応していません';
 
   @override
   String updateFailed(Object e) {
-    return 'Update failed: $e';
+    return '更新に失敗しました: $e';
   }
 
   @override
-  String get confirmUninstall => 'Confirm uninstall';
+  String get confirmUninstall => 'アンインストールの確認';
 
   @override
   String uninstallConfirmMessage(Object name) {
-    return 'Are you sure you want to uninstall \"$name\"? Data cannot be recovered after uninstall.';
+    return '「$name」をアンインストールしますか？削除後のデータは復元できません。';
   }
 
   @override
-  String get uninstall => 'Uninstall';
+  String get uninstall => 'アンインストール';
 
   @override
-  String get cannotUninstall => 'Cannot uninstall';
+  String get cannotUninstall => 'アンインストールできません';
 
   @override
-  String get uninstalled => 'Uninstalled';
+  String get uninstalled => 'アンインストールしました';
 
   @override
   String uninstallFailed(Object e) {
-    return 'Uninstall failed: $e';
+    return 'アンインストールに失敗しました: $e';
   }
 
   @override
-  String get cannotRestart => 'Cannot restart';
+  String get cannotRestart => '再起動できません';
 
   @override
-  String get cannotClose => 'Cannot close';
+  String get cannotClose => '閉じられません';
 
   @override
-  String get running => 'Running';
+  String get running => '実行中';
 
   @override
-  String get open => 'Open';
+  String get open => '開く';
 
   @override
-  String get launchAndOpen => 'Launch and open';
+  String get launchAndOpen => '起動して開く';
 
   @override
-  String get tips => 'Tips';
+  String get tips => 'ヒント';
 
   @override
-  String get checkAndUpdate => 'Check and update';
+  String get checkAndUpdate => '確認して更新';
 
   @override
-  String get close => 'Close';
+  String get close => '閉じる';
 
   @override
-  String get configureServerFirst =>
-      'Please configure and activate a server first';
+  String get configureServerFirst => '先にサーバーを設定して有効にしてください';
 
   @override
-  String get loginFailed => 'Login failed';
+  String get loginFailed => 'ログインに失敗しました';
 
   @override
-  String get configureServer => 'Configure server';
+  String get configureServer => 'サーバー設定';
 
   @override
-  String get username => 'Username';
+  String get username => 'ユーザー名';
 
   @override
-  String get password => 'Password';
+  String get password => 'パスワード';
 
   @override
-  String get usernameRequired => 'Please enter username';
+  String get usernameRequired => 'ユーザー名を入力してください';
 
   @override
-  String get passwordRequired => 'Please enter password';
+  String get passwordRequired => 'パスワードを入力してください';
 
   @override
-  String get passwordMinLength => 'Password must be at least 5 characters';
+  String get passwordMinLength => 'パスワードは5文字以上にしてください';
 
   @override
-  String get rememberCredentials => 'Remember credentials';
+  String get rememberCredentials => 'ログイン情報を保存';
 
   @override
-  String get newFolder => 'New folder';
+  String get newFolder => '新しいフォルダー';
 
   @override
-  String get newFile => 'New file';
+  String get newFile => '新しいファイル';
 
   @override
-  String get folderName => 'Folder name';
+  String get folderName => 'フォルダー名';
 
   @override
-  String get fileName => 'File name';
+  String get fileName => 'ファイル名';
 
   @override
-  String get create => 'Create';
+  String get create => '作成';
 
   @override
-  String get folderCreated => 'Folder created successfully';
+  String get folderCreated => 'フォルダーを作成しました';
 
   @override
-  String get fileCreated => 'File created successfully';
+  String get fileCreated => 'ファイルを作成しました';
 
   @override
   String createFailed(Object e) {
-    return 'Create failed: $e';
+    return '作成に失敗しました: $e';
   }
 
   @override
-  String get rename => 'Rename';
+  String get rename => '名前の変更';
 
   @override
-  String get renameFolder => 'Rename folder';
+  String get renameFolder => 'フォルダー名の変更';
 
   @override
-  String get renameFile => 'Rename file';
+  String get renameFile => 'ファイル名の変更';
 
   @override
-  String get newName => 'New name';
+  String get newName => '新しい名前';
 
   @override
-  String get renameSuccess => 'Renamed successfully';
+  String get renameSuccess => '名前を変更しました';
 
   @override
   String renameFailed(Object e) {
-    return 'Rename failed: $e';
+    return '名前の変更に失敗しました: $e';
   }
 
   @override
-  String get deleteFolder => 'Delete folder';
+  String get deleteFolder => 'フォルダーを削除';
 
   @override
-  String get deleteFile => 'Delete file';
+  String get deleteFile => 'ファイルを削除';
 
   @override
   String deleteConfirm(Object name) {
-    return 'Are you sure you want to delete \"$name\"? This action cannot be undone.';
+    return '「$name」を削除しますか？この操作は取り消せません。';
   }
 
   @override
-  String get deleteSuccess => 'Deleted successfully';
+  String get deleteSuccess => '削除しました';
 
   @override
   String deleteFailed(Object e) {
-    return 'Delete failed: $e';
+    return '削除に失敗しました: $e';
   }
 
   @override
-  String get parentDirectory => 'Parent directory';
+  String get parentDirectory => '親フォルダー';
 
   @override
-  String get listView => 'List view';
+  String get listView => 'リスト表示';
 
   @override
-  String get gridView => 'Grid view';
+  String get gridView => 'グリッド表示';
 
   @override
-  String get folderEmpty => 'Folder is empty';
+  String get folderEmpty => 'フォルダーは空です';
 
   @override
   String openFile(Object name) {
-    return 'Open file: $name';
+    return 'ファイルを開く: $name';
   }
 
   @override
-  String get folder => 'Folder';
+  String get folder => 'フォルダー';
 
   @override
-  String get file => 'File';
+  String get file => 'ファイル';
 
   @override
-  String get download => 'Download';
+  String get download => 'ダウンロード';
 
   @override
-  String get downloadNotImplemented => 'Download not implemented';
+  String get downloadNotImplemented => 'ダウンロードは未実装です';
 
   @override
-  String get downloadSuccess => 'Downloaded successfully';
+  String get downloadSuccess => 'ダウンロードしました';
 
   @override
-  String get downloadCancelled => 'Download cancelled';
+  String get downloadCancelled => 'ダウンロードをキャンセルしました';
 
   @override
-  String get downloadPreparing => 'Preparing download...';
+  String get downloadPreparing => 'ダウンロードの準備中…';
 
   @override
-  String get downloadAndPlay => 'Download and play';
+  String get downloadAndPlay => 'ダウンロードして再生';
 
   @override
-  String get downloadingForPlayback => 'Downloading for playback...';
+  String get downloadingForPlayback => '再生用にダウンロード中…';
 
   @override
-  String get fullscreen => 'Fullscreen';
+  String get fullscreen => '全画面';
 
   @override
-  String get installSuccess => 'Installed successfully';
+  String get installSuccess => 'インストールしました';
 
   @override
   String installSuccessWithApp(Object title) {
-    return '$title installed successfully';
+    return '「$title」をインストールしました';
   }
 
   @override
   String installFailed(Object e) {
-    return 'Install failed: $e';
+    return 'インストールに失敗しました: $e';
   }
 
   @override
   String getAppConfigFailed(Object e) {
-    return 'Failed to get app config: $e';
+    return 'アプリ設定の取得に失敗しました: $e';
   }
 
   @override
   String customInstall(Object title) {
-    return 'Custom install: $title';
+    return 'カスタムインストール: $title';
   }
 
   @override
-  String get editComposeHint => 'Edit docker-compose config and click install';
+  String get editComposeHint => 'docker-compose を編集してインストールをタップ';
 
   @override
-  String get install => 'Install';
+  String get install => 'インストール';
 
   @override
   String get appStore => 'App Store';
 
   @override
-  String get searchApps => 'Search apps';
+  String get searchApps => 'アプリを検索';
 
   @override
-  String get category => 'Category';
+  String get category => 'カテゴリー';
 
   @override
-  String get allCategories => 'All categories';
+  String get allCategories => 'すべてのカテゴリー';
 
   @override
-  String get noAppsFound => 'No matching apps found';
+  String get noAppsFound => '該当するアプリがありません';
 
   @override
-  String get installed => 'Installed';
+  String get installed => 'インストール済み';
 
   @override
-  String get custom => 'Custom';
+  String get custom => 'カスタム';
 
   @override
-  String get appDetail => 'App details';
+  String get appDetail => 'アプリの詳細';
 
   @override
-  String get appNotFound => 'App not found';
+  String get appNotFound => 'アプリが見つかりません';
 
   @override
   String versionLabel(Object version) {
-    return 'Version: $version';
+    return 'バージョン: $version';
   }
 
   @override
-  String get description => 'Description';
+  String get description => '説明';
 
   @override
-  String get status => 'Status';
+  String get status => '状態';
 
   @override
-  String get notRunning => 'Not running';
+  String get notRunning => '停止中';
 
   @override
   String get installStartNotImplemented =>
-      'Install/start not implemented (needs /v2/app_management/compose)';
+      'インストール／起動は未実装です（/v2/app_management/compose が必要）';
 
   @override
   String get uninstallNotImplemented =>
-      'Uninstall not implemented (needs /v2/app_management/compose)';
+      'アンインストールは未実装です（/v2/app_management/compose が必要）';
 
   @override
-  String get installStart => 'Install / Start';
+  String get installStart => 'インストール／起動';
 
   @override
-  String get legacyApps => 'Legacy apps (to be rebuilt)';
+  String get legacyApps => 'レガシーアプリ（再構築予定）';
 
   @override
-  String get version => 'Version';
+  String get version => 'バージョン';
 
   @override
-  String get cpuUsage => 'CPU usage';
+  String get cpuUsage => 'CPU 使用率';
 
   @override
   String cores(Object count) {
-    return 'Cores: $count';
+    return 'コア数: $count';
   }
 
   @override
-  String get memory => 'Memory (RAM)';
+  String get memory => 'メモリー（RAM）';
 
   @override
   String memoryUsage(Object percent) {
-    return '$percent% usage';
+    return '使用率 $percent%';
   }
 
   @override
   String usedOfTotal(Object used, Object total) {
-    return 'Used $used / Total $total';
+    return '使用 $used / 合計 $total';
   }
 
   @override
-  String get storage => 'Storage';
+  String get storage => 'ストレージ';
 
   @override
   String totalLabel(Object storage) {
-    return 'Total $storage';
+    return '合計 $storage';
   }
 
   @override
   String usedLabel(Object used, Object percent) {
-    return 'Used $used · $percent%';
+    return '使用 $used · $percent%';
   }
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'ディスク';
 
   @override
-  String get networkStatus => 'Network status';
+  String get networkStatus => 'ネットワーク';
 
   @override
-  String get addServer => 'Add server';
+  String get addServer => 'サーバーを追加';
 
   @override
-  String get editServer => 'Edit server';
+  String get editServer => 'サーバーを編集';
 
   @override
-  String get nasType => 'NAS type';
+  String get nasType => 'NAS の種類';
 
   @override
   String get nasTypeCasaOS => 'CasaOS';
@@ -490,104 +486,103 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nasTypeZimaOS => 'ZimaOS';
 
   @override
-  String get serverName => 'Server name';
+  String get serverName => 'サーバー名';
 
   @override
-  String get serverNameRequired => 'Please enter server name';
+  String get serverNameRequired => 'サーバー名を入力してください';
 
   @override
-  String get hostAddress => 'Host address';
+  String get hostAddress => 'ホストアドレス';
 
   @override
-  String get hostAddressHint => '192.168.1.100 or casaos.local';
+  String get hostAddressHint => '192.168.1.100 または casaos.local';
 
   @override
-  String get hostAddressRequired => 'Please enter host address';
+  String get hostAddressRequired => 'ホストアドレスを入力してください';
 
   @override
-  String get port => 'Port';
+  String get port => 'ポート';
 
   @override
-  String get portRequired => 'Please enter port';
+  String get portRequired => 'ポートを入力してください';
 
   @override
-  String get portInvalid => 'Please enter a valid port (1-65535)';
+  String get portInvalid => '有効なポート（1〜65535）を入力してください';
 
   @override
-  String get useHttps => 'Use HTTPS';
+  String get useHttps => 'HTTPS を使用';
 
   @override
-  String get save => 'Save';
+  String get save => '保存';
 
   @override
-  String get noServerConfigured => 'No server configured yet';
+  String get noServerConfigured => 'サーバーがまだ設定されていません';
 
   @override
-  String get activate => 'Activate';
+  String get activate => '有効化';
 
   @override
-  String get edit => 'Edit';
+  String get edit => '編集';
 
   @override
-  String get confirmDelete => 'Confirm delete';
+  String get confirmDelete => '削除の確認';
 
   @override
   String confirmDeleteServer(Object name) {
-    return 'Are you sure you want to delete server \"$name\"?';
+    return 'サーバー「$name」を削除しますか？';
   }
 
   @override
-  String get welcomeToCasaOS => 'Welcome to CasaOS / ZimaOS';
+  String get welcomeToCasaOS => 'CasaOS / ZimaOS へようこそ';
 
   @override
-  String get createAccountHint => 'Let\'s create your initial account first.';
+  String get createAccountHint => 'まず初期アカウントを作成しましょう。';
 
   @override
-  String get createAccount => 'Create account';
+  String get createAccount => 'アカウント作成';
 
   @override
-  String get start => 'Start →';
+  String get start => '開始 →';
 
   @override
-  String get confirmPassword => 'Confirm password';
+  String get confirmPassword => 'パスワードの確認';
 
   @override
-  String get confirmPasswordRequired => 'Please enter password again';
+  String get confirmPasswordRequired => 'パスワードをもう一度入力してください';
 
   @override
-  String get passwordMismatch => 'Passwords do not match';
+  String get passwordMismatch => 'パスワードが一致しません';
 
   @override
-  String get allDone => 'All done!';
+  String get allDone => '完了しました！';
 
   @override
   String get accountCreatedHint =>
-      'Your account has been created. Enter the desktop to experience CasaOS / ZimaOS.';
+      'アカウントを作成しました。デスクトップで CasaOS / ZimaOS をお試しください。';
 
   @override
-  String get enterDesktop => 'Enter desktop';
+  String get enterDesktop => 'デスクトップへ';
 
   @override
-  String get cannotGetInitKey =>
-      'Cannot get init key. Please check server status.';
+  String get cannotGetInitKey => '初期化キーを取得できません。サーバーの状態を確認してください。';
 
   @override
   String initFailed(Object e) {
-    return 'Init failed: $e';
+    return '初期化に失敗しました: $e';
   }
 
   @override
-  String get openAppWith => 'Open app with';
+  String get openAppWith => 'アプリを開く方法';
 
   @override
-  String get builtinBrowser => 'Built-in browser';
+  String get builtinBrowser => 'アプリ内ブラウザー';
 
   @override
-  String get systemBrowser => 'System browser';
+  String get systemBrowser => 'システムブラウザー';
 
   @override
-  String get openInSystemBrowser => 'Open in system browser';
+  String get openInSystemBrowser => 'システムブラウザーで開く';
 
   @override
-  String get loading => 'Loading...';
+  String get loading => '読み込み中…';
 }

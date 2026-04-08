@@ -15,7 +15,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appTitleClient => 'Client CasaOS / ZimaOS';
 
   @override
-  String get settings => 'Paramètres';
+  String get settings => 'Réglages';
 
   @override
   String get about => 'À propos';
@@ -33,32 +33,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get themeMode => 'Mode du thème';
 
   @override
-  String get followSystem => 'Suivre le système';
+  String get followSystem => 'Comme le système';
 
   @override
-  String get lightMode => 'Mode clair';
+  String get lightMode => 'Clair';
 
   @override
-  String get darkMode => 'Mode sombre';
+  String get darkMode => 'Sombre';
 
   @override
   String get themeColor => 'Couleur du thème';
 
   @override
   String get themeColorDescription =>
-      'Choisissez une couleur de thème ; elle s\'applique au mode clair et sombre.';
+      'Choisissez une couleur de thème ; elle s’applique aux modes clair et sombre.';
 
   @override
   String get language => 'Langue';
 
   @override
-  String get languageFollowSystem => 'Suivre le système';
+  String get languageFollowSystem => 'Comme le système';
 
   @override
-  String get files => 'Gestion des fichiers';
+  String get files => 'Fichiers';
 
   @override
-  String get serverConfig => 'Configuration du serveur';
+  String get serverConfig => 'Serveur';
 
   @override
   String get refresh => 'Actualiser';
@@ -96,368 +96,370 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noApps => 'Aucune application';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'Annuler';
 
   @override
   String get ok => 'OK';
 
   @override
-  String get retry => 'Retry';
+  String get retry => 'Réessayer';
 
   @override
-  String get back => 'Back';
+  String get back => 'Retour';
 
   @override
-  String get delete => 'Delete';
+  String get delete => 'Supprimer';
 
   @override
-  String get cannotGetAppAddress => 'Cannot get app address';
+  String get cannotGetAppAddress =>
+      'Impossible d’obtenir l’adresse de l’application';
 
   @override
   String cannotOpen(Object url) {
-    return 'Cannot open: $url';
+    return 'Impossible d’ouvrir : $url';
   }
 
   @override
   String openFailed(Object e) {
-    return 'Open failed: $e';
+    return 'Échec de l’ouverture : $e';
   }
 
   @override
   String get appTypeNotSupported =>
-      'This app type does not support this operation';
+      'Ce type d’application ne prend pas en charge cette action';
 
   @override
-  String get starting => 'Starting';
+  String get starting => 'Démarrage';
 
   @override
-  String get restarting => 'Restarting';
+  String get restarting => 'Redémarrage';
 
   @override
-  String get restart => 'Restart';
+  String get restart => 'Redémarrer';
 
   @override
-  String get closed => 'Closed';
+  String get closed => 'Fermée';
 
   @override
   String operationFailed(Object e) {
-    return 'Operation failed: $e';
+    return 'Échec de l’opération : $e';
   }
 
   @override
   String tipsTitle(Object name) {
-    return '$name - Tips';
+    return '$name — Conseils';
   }
 
   @override
   String get noDescription =>
-      'No description. Go to settings to modify configuration.';
+      'Aucune description. Modifiez la configuration dans les réglages.';
 
   @override
   String get checkUpdateNotSupported =>
-      'This app does not support check for updates';
+      'Cette application ne prend pas en charge la vérification des mises à jour';
 
   @override
   String updateFailed(Object e) {
-    return 'Update failed: $e';
+    return 'Échec de la mise à jour : $e';
   }
 
   @override
-  String get confirmUninstall => 'Confirm uninstall';
+  String get confirmUninstall => 'Confirmer la désinstallation';
 
   @override
   String uninstallConfirmMessage(Object name) {
-    return 'Are you sure you want to uninstall \"$name\"? Data cannot be recovered after uninstall.';
+    return 'Désinstaller « $name » ? Les données ne pourront pas être récupérées.';
   }
 
   @override
-  String get uninstall => 'Uninstall';
+  String get uninstall => 'Désinstaller';
 
   @override
-  String get cannotUninstall => 'Cannot uninstall';
+  String get cannotUninstall => 'Impossible de désinstaller';
 
   @override
-  String get uninstalled => 'Uninstalled';
+  String get uninstalled => 'Désinstallée';
 
   @override
   String uninstallFailed(Object e) {
-    return 'Uninstall failed: $e';
+    return 'Échec de la désinstallation : $e';
   }
 
   @override
-  String get cannotRestart => 'Cannot restart';
+  String get cannotRestart => 'Impossible de redémarrer';
 
   @override
-  String get cannotClose => 'Cannot close';
+  String get cannotClose => 'Impossible de fermer';
 
   @override
-  String get running => 'Running';
+  String get running => 'En cours d’exécution';
 
   @override
-  String get open => 'Open';
+  String get open => 'Ouvrir';
 
   @override
-  String get launchAndOpen => 'Launch and open';
+  String get launchAndOpen => 'Lancer et ouvrir';
 
   @override
-  String get tips => 'Tips';
+  String get tips => 'Conseils';
 
   @override
-  String get checkAndUpdate => 'Check and update';
+  String get checkAndUpdate => 'Vérifier et mettre à jour';
 
   @override
-  String get close => 'Close';
+  String get close => 'Fermer';
 
   @override
-  String get configureServerFirst =>
-      'Please configure and activate a server first';
+  String get configureServerFirst => 'Configurez et activez d’abord un serveur';
 
   @override
-  String get loginFailed => 'Login failed';
+  String get loginFailed => 'Échec de la connexion';
 
   @override
-  String get configureServer => 'Configure server';
+  String get configureServer => 'Configurer le serveur';
 
   @override
-  String get username => 'Username';
+  String get username => 'Nom d’utilisateur';
 
   @override
-  String get password => 'Password';
+  String get password => 'Mot de passe';
 
   @override
-  String get usernameRequired => 'Please enter username';
+  String get usernameRequired => 'Saisissez le nom d’utilisateur';
 
   @override
-  String get passwordRequired => 'Please enter password';
+  String get passwordRequired => 'Saisissez le mot de passe';
 
   @override
-  String get passwordMinLength => 'Password must be at least 5 characters';
+  String get passwordMinLength =>
+      'Le mot de passe doit contenir au moins 5 caractères';
 
   @override
-  String get rememberCredentials => 'Remember credentials';
+  String get rememberCredentials => 'Mémoriser les identifiants';
 
   @override
-  String get newFolder => 'New folder';
+  String get newFolder => 'Nouveau dossier';
 
   @override
-  String get newFile => 'New file';
+  String get newFile => 'Nouveau fichier';
 
   @override
-  String get folderName => 'Folder name';
+  String get folderName => 'Nom du dossier';
 
   @override
-  String get fileName => 'File name';
+  String get fileName => 'Nom du fichier';
 
   @override
-  String get create => 'Create';
+  String get create => 'Créer';
 
   @override
-  String get folderCreated => 'Folder created successfully';
+  String get folderCreated => 'Dossier créé';
 
   @override
-  String get fileCreated => 'File created successfully';
+  String get fileCreated => 'Fichier créé';
 
   @override
   String createFailed(Object e) {
-    return 'Create failed: $e';
+    return 'Échec de la création : $e';
   }
 
   @override
-  String get rename => 'Rename';
+  String get rename => 'Renommer';
 
   @override
-  String get renameFolder => 'Rename folder';
+  String get renameFolder => 'Renommer le dossier';
 
   @override
-  String get renameFile => 'Rename file';
+  String get renameFile => 'Renommer le fichier';
 
   @override
-  String get newName => 'New name';
+  String get newName => 'Nouveau nom';
 
   @override
-  String get renameSuccess => 'Renamed successfully';
+  String get renameSuccess => 'Renommé avec succès';
 
   @override
   String renameFailed(Object e) {
-    return 'Rename failed: $e';
+    return 'Échec du renommage : $e';
   }
 
   @override
-  String get deleteFolder => 'Delete folder';
+  String get deleteFolder => 'Supprimer le dossier';
 
   @override
-  String get deleteFile => 'Delete file';
+  String get deleteFile => 'Supprimer le fichier';
 
   @override
   String deleteConfirm(Object name) {
-    return 'Are you sure you want to delete \"$name\"? This action cannot be undone.';
+    return 'Supprimer « $name » ? Cette action est irréversible.';
   }
 
   @override
-  String get deleteSuccess => 'Deleted successfully';
+  String get deleteSuccess => 'Supprimé avec succès';
 
   @override
   String deleteFailed(Object e) {
-    return 'Delete failed: $e';
+    return 'Échec de la suppression : $e';
   }
 
   @override
-  String get parentDirectory => 'Parent directory';
+  String get parentDirectory => 'Dossier parent';
 
   @override
-  String get listView => 'List view';
+  String get listView => 'Liste';
 
   @override
-  String get gridView => 'Grid view';
+  String get gridView => 'Grille';
 
   @override
-  String get folderEmpty => 'Folder is empty';
+  String get folderEmpty => 'Le dossier est vide';
 
   @override
   String openFile(Object name) {
-    return 'Open file: $name';
+    return 'Ouvrir le fichier : $name';
   }
 
   @override
-  String get folder => 'Folder';
+  String get folder => 'Dossier';
 
   @override
-  String get file => 'File';
+  String get file => 'Fichier';
 
   @override
-  String get download => 'Download';
+  String get download => 'Télécharger';
 
   @override
-  String get downloadNotImplemented => 'Download not implemented';
+  String get downloadNotImplemented => 'Téléchargement non implémenté';
 
   @override
-  String get downloadSuccess => 'Downloaded successfully';
+  String get downloadSuccess => 'Téléchargement terminé';
 
   @override
-  String get downloadCancelled => 'Download cancelled';
+  String get downloadCancelled => 'Téléchargement annulé';
 
   @override
-  String get downloadPreparing => 'Preparing download...';
+  String get downloadPreparing => 'Préparation du téléchargement…';
 
   @override
-  String get downloadAndPlay => 'Download and play';
+  String get downloadAndPlay => 'Télécharger et lire';
 
   @override
-  String get downloadingForPlayback => 'Downloading for playback...';
+  String get downloadingForPlayback => 'Téléchargement pour lecture…';
 
   @override
-  String get fullscreen => 'Fullscreen';
+  String get fullscreen => 'Plein écran';
 
   @override
-  String get installSuccess => 'Installed successfully';
+  String get installSuccess => 'Installation réussie';
 
   @override
   String installSuccessWithApp(Object title) {
-    return '$title installed successfully';
+    return '« $title » installée avec succès';
   }
 
   @override
   String installFailed(Object e) {
-    return 'Install failed: $e';
+    return 'Échec de l’installation : $e';
   }
 
   @override
   String getAppConfigFailed(Object e) {
-    return 'Failed to get app config: $e';
+    return 'Impossible d’obtenir la configuration de l’app : $e';
   }
 
   @override
   String customInstall(Object title) {
-    return 'Custom install: $title';
+    return 'Installation personnalisée : $title';
   }
 
   @override
-  String get editComposeHint => 'Edit docker-compose config and click install';
+  String get editComposeHint =>
+      'Modifiez docker-compose puis appuyez sur installer';
 
   @override
-  String get install => 'Install';
+  String get install => 'Installer';
 
   @override
   String get appStore => 'App Store';
 
   @override
-  String get searchApps => 'Search apps';
+  String get searchApps => 'Rechercher des apps';
 
   @override
-  String get category => 'Category';
+  String get category => 'Catégorie';
 
   @override
-  String get allCategories => 'All categories';
+  String get allCategories => 'Toutes les catégories';
 
   @override
-  String get noAppsFound => 'No matching apps found';
+  String get noAppsFound => 'Aucune application correspondante';
 
   @override
-  String get installed => 'Installed';
+  String get installed => 'Installée';
 
   @override
-  String get custom => 'Custom';
+  String get custom => 'Personnalisée';
 
   @override
-  String get appDetail => 'App details';
+  String get appDetail => 'Détails de l’application';
 
   @override
-  String get appNotFound => 'App not found';
+  String get appNotFound => 'Application introuvable';
 
   @override
   String versionLabel(Object version) {
-    return 'Version: $version';
+    return 'Version : $version';
   }
 
   @override
   String get description => 'Description';
 
   @override
-  String get status => 'Status';
+  String get status => 'État';
 
   @override
-  String get notRunning => 'Not running';
+  String get notRunning => 'Arrêtée';
 
   @override
   String get installStartNotImplemented =>
-      'Install/start not implemented (needs /v2/app_management/compose)';
+      'Installation/démarrage non implémentés (nécessite /v2/app_management/compose)';
 
   @override
   String get uninstallNotImplemented =>
-      'Uninstall not implemented (needs /v2/app_management/compose)';
+      'Désinstallation non implémentée (nécessite /v2/app_management/compose)';
 
   @override
-  String get installStart => 'Install / Start';
+  String get installStart => 'Installer / Démarrer';
 
   @override
-  String get legacyApps => 'Legacy apps (to be rebuilt)';
+  String get legacyApps => 'Applications héritées (à reconstruire)';
 
   @override
   String get version => 'Version';
 
   @override
-  String get cpuUsage => 'CPU usage';
+  String get cpuUsage => 'Utilisation CPU';
 
   @override
   String cores(Object count) {
-    return 'Cores: $count';
+    return 'Cœurs : $count';
   }
 
   @override
-  String get memory => 'Memory (RAM)';
+  String get memory => 'Mémoire (RAM)';
 
   @override
   String memoryUsage(Object percent) {
-    return '$percent% usage';
+    return '$percent % d’utilisation';
   }
 
   @override
   String usedOfTotal(Object used, Object total) {
-    return 'Used $used / Total $total';
+    return 'Utilisé $used / Total $total';
   }
 
   @override
-  String get storage => 'Storage';
+  String get storage => 'Stockage';
 
   @override
   String totalLabel(Object storage) {
@@ -466,23 +468,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String usedLabel(Object used, Object percent) {
-    return 'Used $used · $percent%';
+    return 'Utilisé $used · $percent %';
   }
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'Disque';
 
   @override
-  String get networkStatus => 'Network status';
+  String get networkStatus => 'Réseau';
 
   @override
-  String get addServer => 'Add server';
+  String get addServer => 'Ajouter un serveur';
 
   @override
-  String get editServer => 'Edit server';
+  String get editServer => 'Modifier le serveur';
 
   @override
-  String get nasType => 'NAS type';
+  String get nasType => 'Type de NAS';
 
   @override
   String get nasTypeCasaOS => 'CasaOS';
@@ -491,104 +493,104 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nasTypeZimaOS => 'ZimaOS';
 
   @override
-  String get serverName => 'Server name';
+  String get serverName => 'Nom du serveur';
 
   @override
-  String get serverNameRequired => 'Please enter server name';
+  String get serverNameRequired => 'Saisissez le nom du serveur';
 
   @override
-  String get hostAddress => 'Host address';
+  String get hostAddress => 'Adresse de l’hôte';
 
   @override
-  String get hostAddressHint => '192.168.1.100 or casaos.local';
+  String get hostAddressHint => '192.168.1.100 ou casaos.local';
 
   @override
-  String get hostAddressRequired => 'Please enter host address';
+  String get hostAddressRequired => 'Saisissez l’adresse de l’hôte';
 
   @override
   String get port => 'Port';
 
   @override
-  String get portRequired => 'Please enter port';
+  String get portRequired => 'Saisissez le port';
 
   @override
-  String get portInvalid => 'Please enter a valid port (1-65535)';
+  String get portInvalid => 'Saisissez un port valide (1-65535)';
 
   @override
-  String get useHttps => 'Use HTTPS';
+  String get useHttps => 'Utiliser HTTPS';
 
   @override
-  String get save => 'Save';
+  String get save => 'Enregistrer';
 
   @override
-  String get noServerConfigured => 'No server configured yet';
+  String get noServerConfigured => 'Aucun serveur configuré';
 
   @override
-  String get activate => 'Activate';
+  String get activate => 'Activer';
 
   @override
-  String get edit => 'Edit';
+  String get edit => 'Modifier';
 
   @override
-  String get confirmDelete => 'Confirm delete';
+  String get confirmDelete => 'Confirmer la suppression';
 
   @override
   String confirmDeleteServer(Object name) {
-    return 'Are you sure you want to delete server \"$name\"?';
+    return 'Supprimer le serveur « $name » ?';
   }
 
   @override
-  String get welcomeToCasaOS => 'Welcome to CasaOS / ZimaOS';
+  String get welcomeToCasaOS => 'Bienvenue dans CasaOS / ZimaOS';
 
   @override
-  String get createAccountHint => 'Let\'s create your initial account first.';
+  String get createAccountHint => 'Créons d’abord votre compte initial.';
 
   @override
-  String get createAccount => 'Create account';
+  String get createAccount => 'Créer un compte';
 
   @override
-  String get start => 'Start →';
+  String get start => 'Commencer →';
 
   @override
-  String get confirmPassword => 'Confirm password';
+  String get confirmPassword => 'Confirmer le mot de passe';
 
   @override
-  String get confirmPasswordRequired => 'Please enter password again';
+  String get confirmPasswordRequired => 'Saisissez à nouveau le mot de passe';
 
   @override
-  String get passwordMismatch => 'Passwords do not match';
+  String get passwordMismatch => 'Les mots de passe ne correspondent pas';
 
   @override
-  String get allDone => 'All done!';
+  String get allDone => 'Terminé !';
 
   @override
   String get accountCreatedHint =>
-      'Your account has been created. Enter the desktop to experience CasaOS / ZimaOS.';
+      'Votre compte a été créé. Accédez au bureau pour découvrir CasaOS / ZimaOS.';
 
   @override
-  String get enterDesktop => 'Enter desktop';
+  String get enterDesktop => 'Aller au bureau';
 
   @override
   String get cannotGetInitKey =>
-      'Cannot get init key. Please check server status.';
+      'Impossible d’obtenir la clé d’initialisation. Vérifiez l’état du serveur.';
 
   @override
   String initFailed(Object e) {
-    return 'Init failed: $e';
+    return 'Échec de l’initialisation : $e';
   }
 
   @override
-  String get openAppWith => 'Open app with';
+  String get openAppWith => 'Ouvrir l’application avec';
 
   @override
-  String get builtinBrowser => 'Built-in browser';
+  String get builtinBrowser => 'Navigateur intégré';
 
   @override
-  String get systemBrowser => 'System browser';
+  String get systemBrowser => 'Navigateur système';
 
   @override
-  String get openInSystemBrowser => 'Open in system browser';
+  String get openInSystemBrowser => 'Ouvrir dans le navigateur système';
 
   @override
-  String get loading => 'Loading...';
+  String get loading => 'Chargement…';
 }

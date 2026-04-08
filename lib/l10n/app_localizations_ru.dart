@@ -36,17 +36,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get followSystem => 'Как в системе';
 
   @override
-  String get lightMode => 'Светлый режим';
+  String get lightMode => 'Светлая тема';
 
   @override
-  String get darkMode => 'Тёмный режим';
+  String get darkMode => 'Тёмная тема';
 
   @override
   String get themeColor => 'Цвет темы';
 
   @override
   String get themeColorDescription =>
-      'Выберите цвет темы; он применяется к светлому и тёмному режиму.';
+      'Выберите цвет темы; применяется к светлой и тёмной теме.';
 
   @override
   String get language => 'Язык';
@@ -55,10 +55,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get languageFollowSystem => 'Как в системе';
 
   @override
-  String get files => 'Управление файлами';
+  String get files => 'Файлы';
 
   @override
-  String get serverConfig => 'Настройка сервера';
+  String get serverConfig => 'Сервер';
 
   @override
   String get refresh => 'Обновить';
@@ -96,393 +96,393 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noApps => 'Нет приложений';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'Отмена';
 
   @override
   String get ok => 'OK';
 
   @override
-  String get retry => 'Retry';
+  String get retry => 'Повторить';
 
   @override
-  String get back => 'Back';
+  String get back => 'Назад';
 
   @override
-  String get delete => 'Delete';
+  String get delete => 'Удалить';
 
   @override
-  String get cannotGetAppAddress => 'Cannot get app address';
+  String get cannotGetAppAddress => 'Не удалось получить адрес приложения';
 
   @override
   String cannotOpen(Object url) {
-    return 'Cannot open: $url';
+    return 'Не удалось открыть: $url';
   }
 
   @override
   String openFailed(Object e) {
-    return 'Open failed: $e';
+    return 'Ошибка открытия: $e';
   }
 
   @override
   String get appTypeNotSupported =>
-      'This app type does not support this operation';
+      'Этот тип приложения не поддерживает это действие';
 
   @override
-  String get starting => 'Starting';
+  String get starting => 'Запуск';
 
   @override
-  String get restarting => 'Restarting';
+  String get restarting => 'Перезапуск';
 
   @override
-  String get restart => 'Restart';
+  String get restart => 'Перезапустить';
 
   @override
-  String get closed => 'Closed';
+  String get closed => 'Закрыто';
 
   @override
   String operationFailed(Object e) {
-    return 'Operation failed: $e';
+    return 'Операция не выполнена: $e';
   }
 
   @override
   String tipsTitle(Object name) {
-    return '$name - Tips';
+    return '$name — подсказки';
   }
 
   @override
   String get noDescription =>
-      'No description. Go to settings to modify configuration.';
+      'Описания нет. Измените конфигурацию в настройках.';
 
   @override
   String get checkUpdateNotSupported =>
-      'This app does not support check for updates';
+      'Это приложение не поддерживает проверку обновлений';
 
   @override
   String updateFailed(Object e) {
-    return 'Update failed: $e';
+    return 'Ошибка обновления: $e';
   }
 
   @override
-  String get confirmUninstall => 'Confirm uninstall';
+  String get confirmUninstall => 'Подтвердите удаление';
 
   @override
   String uninstallConfirmMessage(Object name) {
-    return 'Are you sure you want to uninstall \"$name\"? Data cannot be recovered after uninstall.';
+    return 'Удалить «$name»? Данные после удаления восстановить нельзя.';
   }
 
   @override
-  String get uninstall => 'Uninstall';
+  String get uninstall => 'Удалить';
 
   @override
-  String get cannotUninstall => 'Cannot uninstall';
+  String get cannotUninstall => 'Не удалось удалить';
 
   @override
-  String get uninstalled => 'Uninstalled';
+  String get uninstalled => 'Удалено';
 
   @override
   String uninstallFailed(Object e) {
-    return 'Uninstall failed: $e';
+    return 'Ошибка удаления: $e';
   }
 
   @override
-  String get cannotRestart => 'Cannot restart';
+  String get cannotRestart => 'Не удалось перезапустить';
 
   @override
-  String get cannotClose => 'Cannot close';
+  String get cannotClose => 'Не удалось закрыть';
 
   @override
-  String get running => 'Running';
+  String get running => 'Запущено';
 
   @override
-  String get open => 'Open';
+  String get open => 'Открыть';
 
   @override
-  String get launchAndOpen => 'Launch and open';
+  String get launchAndOpen => 'Запустить и открыть';
 
   @override
-  String get tips => 'Tips';
+  String get tips => 'Подсказки';
 
   @override
-  String get checkAndUpdate => 'Check and update';
+  String get checkAndUpdate => 'Проверить и обновить';
 
   @override
-  String get close => 'Close';
+  String get close => 'Закрыть';
 
   @override
-  String get configureServerFirst =>
-      'Please configure and activate a server first';
+  String get configureServerFirst => 'Сначала настройте и активируйте сервер';
 
   @override
-  String get loginFailed => 'Login failed';
+  String get loginFailed => 'Не удалось войти';
 
   @override
-  String get configureServer => 'Configure server';
+  String get configureServer => 'Настроить сервер';
 
   @override
-  String get username => 'Username';
+  String get username => 'Имя пользователя';
 
   @override
-  String get password => 'Password';
+  String get password => 'Пароль';
 
   @override
-  String get usernameRequired => 'Please enter username';
+  String get usernameRequired => 'Введите имя пользователя';
 
   @override
-  String get passwordRequired => 'Please enter password';
+  String get passwordRequired => 'Введите пароль';
 
   @override
-  String get passwordMinLength => 'Password must be at least 5 characters';
+  String get passwordMinLength => 'Пароль не короче 5 символов';
 
   @override
-  String get rememberCredentials => 'Remember credentials';
+  String get rememberCredentials => 'Запомнить данные';
 
   @override
-  String get newFolder => 'New folder';
+  String get newFolder => 'Новая папка';
 
   @override
-  String get newFile => 'New file';
+  String get newFile => 'Новый файл';
 
   @override
-  String get folderName => 'Folder name';
+  String get folderName => 'Имя папки';
 
   @override
-  String get fileName => 'File name';
+  String get fileName => 'Имя файла';
 
   @override
-  String get create => 'Create';
+  String get create => 'Создать';
 
   @override
-  String get folderCreated => 'Folder created successfully';
+  String get folderCreated => 'Папка создана';
 
   @override
-  String get fileCreated => 'File created successfully';
+  String get fileCreated => 'Файл создан';
 
   @override
   String createFailed(Object e) {
-    return 'Create failed: $e';
+    return 'Не удалось создать: $e';
   }
 
   @override
-  String get rename => 'Rename';
+  String get rename => 'Переименовать';
 
   @override
-  String get renameFolder => 'Rename folder';
+  String get renameFolder => 'Переименовать папку';
 
   @override
-  String get renameFile => 'Rename file';
+  String get renameFile => 'Переименовать файл';
 
   @override
-  String get newName => 'New name';
+  String get newName => 'Новое имя';
 
   @override
-  String get renameSuccess => 'Renamed successfully';
+  String get renameSuccess => 'Переименовано';
 
   @override
   String renameFailed(Object e) {
-    return 'Rename failed: $e';
+    return 'Ошибка переименования: $e';
   }
 
   @override
-  String get deleteFolder => 'Delete folder';
+  String get deleteFolder => 'Удалить папку';
 
   @override
-  String get deleteFile => 'Delete file';
+  String get deleteFile => 'Удалить файл';
 
   @override
   String deleteConfirm(Object name) {
-    return 'Are you sure you want to delete \"$name\"? This action cannot be undone.';
+    return 'Удалить «$name»? Это действие нельзя отменить.';
   }
 
   @override
-  String get deleteSuccess => 'Deleted successfully';
+  String get deleteSuccess => 'Удалено';
 
   @override
   String deleteFailed(Object e) {
-    return 'Delete failed: $e';
+    return 'Ошибка удаления: $e';
   }
 
   @override
-  String get parentDirectory => 'Parent directory';
+  String get parentDirectory => 'Родительская папка';
 
   @override
-  String get listView => 'List view';
+  String get listView => 'Список';
 
   @override
-  String get gridView => 'Grid view';
+  String get gridView => 'Сетка';
 
   @override
-  String get folderEmpty => 'Folder is empty';
+  String get folderEmpty => 'Папка пуста';
 
   @override
   String openFile(Object name) {
-    return 'Open file: $name';
+    return 'Открыть файл: $name';
   }
 
   @override
-  String get folder => 'Folder';
+  String get folder => 'Папка';
 
   @override
-  String get file => 'File';
+  String get file => 'Файл';
 
   @override
-  String get download => 'Download';
+  String get download => 'Скачать';
 
   @override
-  String get downloadNotImplemented => 'Download not implemented';
+  String get downloadNotImplemented => 'Загрузка не реализована';
 
   @override
-  String get downloadSuccess => 'Downloaded successfully';
+  String get downloadSuccess => 'Загрузка завершена';
 
   @override
-  String get downloadCancelled => 'Download cancelled';
+  String get downloadCancelled => 'Загрузка отменена';
 
   @override
-  String get downloadPreparing => 'Preparing download...';
+  String get downloadPreparing => 'Подготовка загрузки…';
 
   @override
-  String get downloadAndPlay => 'Download and play';
+  String get downloadAndPlay => 'Скачать и воспроизвести';
 
   @override
-  String get downloadingForPlayback => 'Downloading for playback...';
+  String get downloadingForPlayback => 'Загрузка для воспроизведения…';
 
   @override
-  String get fullscreen => 'Fullscreen';
+  String get fullscreen => 'Полный экран';
 
   @override
-  String get installSuccess => 'Installed successfully';
+  String get installSuccess => 'Установка выполнена';
 
   @override
   String installSuccessWithApp(Object title) {
-    return '$title installed successfully';
+    return '«$title» установлено';
   }
 
   @override
   String installFailed(Object e) {
-    return 'Install failed: $e';
+    return 'Ошибка установки: $e';
   }
 
   @override
   String getAppConfigFailed(Object e) {
-    return 'Failed to get app config: $e';
+    return 'Не удалось получить конфигурацию приложения: $e';
   }
 
   @override
   String customInstall(Object title) {
-    return 'Custom install: $title';
+    return 'Особая установка: $title';
   }
 
   @override
-  String get editComposeHint => 'Edit docker-compose config and click install';
+  String get editComposeHint =>
+      'Отредактируйте docker-compose и нажмите «Установить»';
 
   @override
-  String get install => 'Install';
+  String get install => 'Установить';
 
   @override
-  String get appStore => 'App Store';
+  String get appStore => 'Магазин приложений';
 
   @override
-  String get searchApps => 'Search apps';
+  String get searchApps => 'Поиск приложений';
 
   @override
-  String get category => 'Category';
+  String get category => 'Категория';
 
   @override
-  String get allCategories => 'All categories';
+  String get allCategories => 'Все категории';
 
   @override
-  String get noAppsFound => 'No matching apps found';
+  String get noAppsFound => 'Подходящих приложений нет';
 
   @override
-  String get installed => 'Installed';
+  String get installed => 'Установлено';
 
   @override
-  String get custom => 'Custom';
+  String get custom => 'Своё';
 
   @override
-  String get appDetail => 'App details';
+  String get appDetail => 'Сведения о приложении';
 
   @override
-  String get appNotFound => 'App not found';
+  String get appNotFound => 'Приложение не найдено';
 
   @override
   String versionLabel(Object version) {
-    return 'Version: $version';
+    return 'Версия: $version';
   }
 
   @override
-  String get description => 'Description';
+  String get description => 'Описание';
 
   @override
-  String get status => 'Status';
+  String get status => 'Статус';
 
   @override
-  String get notRunning => 'Not running';
+  String get notRunning => 'Не запущено';
 
   @override
   String get installStartNotImplemented =>
-      'Install/start not implemented (needs /v2/app_management/compose)';
+      'Установка/запуск не реализованы (нужен /v2/app_management/compose)';
 
   @override
   String get uninstallNotImplemented =>
-      'Uninstall not implemented (needs /v2/app_management/compose)';
+      'Удаление не реализовано (нужен /v2/app_management/compose)';
 
   @override
-  String get installStart => 'Install / Start';
+  String get installStart => 'Установить / Запустить';
 
   @override
-  String get legacyApps => 'Legacy apps (to be rebuilt)';
+  String get legacyApps => 'Устаревшие приложения (будут пересобраны)';
 
   @override
-  String get version => 'Version';
+  String get version => 'Версия';
 
   @override
-  String get cpuUsage => 'CPU usage';
+  String get cpuUsage => 'Загрузка ЦП';
 
   @override
   String cores(Object count) {
-    return 'Cores: $count';
+    return 'Ядра: $count';
   }
 
   @override
-  String get memory => 'Memory (RAM)';
+  String get memory => 'Память (ОЗУ)';
 
   @override
   String memoryUsage(Object percent) {
-    return '$percent% usage';
+    return 'Использование $percent%';
   }
 
   @override
   String usedOfTotal(Object used, Object total) {
-    return 'Used $used / Total $total';
+    return 'Использовано $used / Всего $total';
   }
 
   @override
-  String get storage => 'Storage';
+  String get storage => 'Хранилище';
 
   @override
   String totalLabel(Object storage) {
-    return 'Total $storage';
+    return 'Всего $storage';
   }
 
   @override
   String usedLabel(Object used, Object percent) {
-    return 'Used $used · $percent%';
+    return 'Использовано $used · $percent%';
   }
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'Диск';
 
   @override
-  String get networkStatus => 'Network status';
+  String get networkStatus => 'Сеть';
 
   @override
-  String get addServer => 'Add server';
+  String get addServer => 'Добавить сервер';
 
   @override
-  String get editServer => 'Edit server';
+  String get editServer => 'Изменить сервер';
 
   @override
-  String get nasType => 'NAS type';
+  String get nasType => 'Тип NAS';
 
   @override
   String get nasTypeCasaOS => 'CasaOS';
@@ -491,104 +491,104 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nasTypeZimaOS => 'ZimaOS';
 
   @override
-  String get serverName => 'Server name';
+  String get serverName => 'Имя сервера';
 
   @override
-  String get serverNameRequired => 'Please enter server name';
+  String get serverNameRequired => 'Введите имя сервера';
 
   @override
-  String get hostAddress => 'Host address';
+  String get hostAddress => 'Адрес хоста';
 
   @override
-  String get hostAddressHint => '192.168.1.100 or casaos.local';
+  String get hostAddressHint => '192.168.1.100 или casaos.local';
 
   @override
-  String get hostAddressRequired => 'Please enter host address';
+  String get hostAddressRequired => 'Введите адрес хоста';
 
   @override
-  String get port => 'Port';
+  String get port => 'Порт';
 
   @override
-  String get portRequired => 'Please enter port';
+  String get portRequired => 'Введите порт';
 
   @override
-  String get portInvalid => 'Please enter a valid port (1-65535)';
+  String get portInvalid => 'Укажите порт от 1 до 65535';
 
   @override
-  String get useHttps => 'Use HTTPS';
+  String get useHttps => 'Использовать HTTPS';
 
   @override
-  String get save => 'Save';
+  String get save => 'Сохранить';
 
   @override
-  String get noServerConfigured => 'No server configured yet';
+  String get noServerConfigured => 'Сервер ещё не настроен';
 
   @override
-  String get activate => 'Activate';
+  String get activate => 'Активировать';
 
   @override
-  String get edit => 'Edit';
+  String get edit => 'Изменить';
 
   @override
-  String get confirmDelete => 'Confirm delete';
+  String get confirmDelete => 'Подтвердите удаление';
 
   @override
   String confirmDeleteServer(Object name) {
-    return 'Are you sure you want to delete server \"$name\"?';
+    return 'Удалить сервер «$name»?';
   }
 
   @override
-  String get welcomeToCasaOS => 'Welcome to CasaOS / ZimaOS';
+  String get welcomeToCasaOS => 'Добро пожаловать в CasaOS / ZimaOS';
 
   @override
-  String get createAccountHint => 'Let\'s create your initial account first.';
+  String get createAccountHint => 'Сначала создадим вашу учётную запись.';
 
   @override
-  String get createAccount => 'Create account';
+  String get createAccount => 'Создать учётную запись';
 
   @override
-  String get start => 'Start →';
+  String get start => 'Начать →';
 
   @override
-  String get confirmPassword => 'Confirm password';
+  String get confirmPassword => 'Подтвердите пароль';
 
   @override
-  String get confirmPasswordRequired => 'Please enter password again';
+  String get confirmPasswordRequired => 'Введите пароль ещё раз';
 
   @override
-  String get passwordMismatch => 'Passwords do not match';
+  String get passwordMismatch => 'Пароли не совпадают';
 
   @override
-  String get allDone => 'All done!';
+  String get allDone => 'Готово!';
 
   @override
   String get accountCreatedHint =>
-      'Your account has been created. Enter the desktop to experience CasaOS / ZimaOS.';
+      'Учётная запись создана. Перейдите на рабочий стол CasaOS / ZimaOS.';
 
   @override
-  String get enterDesktop => 'Enter desktop';
+  String get enterDesktop => 'На рабочий стол';
 
   @override
   String get cannotGetInitKey =>
-      'Cannot get init key. Please check server status.';
+      'Не удалось получить ключ инициализации. Проверьте сервер.';
 
   @override
   String initFailed(Object e) {
-    return 'Init failed: $e';
+    return 'Ошибка инициализации: $e';
   }
 
   @override
-  String get openAppWith => 'Open app with';
+  String get openAppWith => 'Открыть приложение в';
 
   @override
-  String get builtinBrowser => 'Built-in browser';
+  String get builtinBrowser => 'Встроенный браузер';
 
   @override
-  String get systemBrowser => 'System browser';
+  String get systemBrowser => 'Системный браузер';
 
   @override
-  String get openInSystemBrowser => 'Open in system browser';
+  String get openInSystemBrowser => 'Открыть в системном браузере';
 
   @override
-  String get loading => 'Loading...';
+  String get loading => 'Загрузка…';
 }
